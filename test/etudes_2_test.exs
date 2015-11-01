@@ -14,4 +14,16 @@ defmodule Etudes2Test do
     assert Etudes2.area(5) == 5
   end
 
+  test "sum of 3" do
+    assert Etudes2.sum(11,22,33) == 66
+  end
+
+  test "sum of 2" do
+    assert Etudes2.sum(11,22) == 40
+  end
+
+  test "sum of 1" do
+    assert Etudes2.sum(11) == 21
+  end
+
 end
