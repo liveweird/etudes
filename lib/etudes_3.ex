@@ -7,7 +7,7 @@ defmodule Etudes3 do
     Area of rectangle
   """
   @spec area(atom(), number(), number()) :: number()
-  def area(:rectangle, x, y) do
+  def area(:rectangle, x, y) when x > 0 and y > 0 do
     x * y
   end
 
@@ -15,7 +15,7 @@ defmodule Etudes3 do
     Area of triangle
   """
   @spec area(atom(), number(), number()) :: number()
-  def area(:triangle, a, h) do
+  def area(:triangle, a, h) when a > 0 and h > 0 do
     (a * h) / 2.0
   end
 
@@ -23,7 +23,7 @@ defmodule Etudes3 do
     Area of ellipse
   """
   @spec area(atom(), number(), number()) :: number()
-  def area(:ellipse, a, b) do
+  def area(:ellipse, a, b) when a > 0 and b > 0 do
     :math.pi * a * b
   end
 
