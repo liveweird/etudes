@@ -3,6 +3,9 @@ defmodule Etudes4 do
     Etudes from chapter #4
   """
 
+  require Logger
+  require IEx
+
   @doc """
     Area of whatever
   """
@@ -59,4 +62,28 @@ defmodule Etudes4 do
       true -> rpower2 x, (n - 1), (acc * x)
     end
   end
+
+  @doc """
+    nth root of the number a
+  """
+  @spec nth_root(float(), integer()) :: float()
+  def nth_root(x, n) do
+    nth_root x, n, x/2.0
+  end
+
+  @spec nth_root(float(), number(), float()) :: float()
+  defp nth_root(x, n, approx) do
+    temp = rpower(approx, n - 1)
+    f = temp * approx - x
+    f_prime = n * temp
+    next = approx - f / f_prime
+    change = abs(next - approx)
+    # Logger.info "Approx: #{next}"
+
+    cond do
+      change < 1.0e-8 -> next
+      true -> nth_root x, n, next
+    end
+  end
+
 end

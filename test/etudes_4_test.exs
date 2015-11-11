@@ -2,6 +2,9 @@ defmodule Etudes4Test do
   use ExUnit.Case
   doctest Etudes4
 
+  require Logger
+  require IEx
+
   test "area of rectangle 4 x 5" do
     assert Etudes4.area({:rectangle,4,5}) == 20
   end
@@ -106,6 +109,26 @@ defmodule Etudes4Test do
 
   test "number to power -8 #2" do
     assert Etudes4.rpower2(2,-8) == 1.0/256.0
+  end
+
+  test "-1st root of 4" do
+    assert catch_error Etudes4.nth_root(4,-1) == ArgumentError
+  end
+
+  test "0th root of 4" do
+    assert catch_error Etudes4.nth_root(4,0) == ArgumentError
+  end
+
+  test "1st root of 4" do
+    assert Etudes4.nth_root(4,1) == 4
+  end
+
+  test "2nd root of 4" do
+    assert Etudes4.nth_root(16,2) == 4
+  end
+
+  test "3rd root of 8" do
+    assert Etudes4.nth_root(8,3) == 2
   end
 
 end
