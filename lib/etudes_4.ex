@@ -35,8 +35,28 @@ defmodule Etudes4 do
   def rpower(x, n) do
     case {x,n} do
       {a,0} -> 1
-      {a,b} when b > 0 -> a * rpower a, (b - 1)
-      {a,b} when b < 0 -> 1 / rpower a, (b * -1)
+      {a,b} when b > 0 -> a * rpower a, b - 1
+      {a,b} when b < 0 -> 1 / rpower a, -b
+    end
+  end
+
+  @doc """
+    Raise x to power n (with accumulator)
+  """
+  @spec rpower2(number(), number()) :: number()
+  def rpower2(x, n) do
+    case {x,n} do
+      {a,0} -> 1
+      {a,b} when b > 0 -> rpower2 a, b, 1
+      {a,b} when b < 0 -> 1 / rpower2 a, -b, 1
+    end
+  end
+
+  @spec rpower2(number(), number(), number()) :: number()
+  defp rpower2(x, n, acc) do
+    cond do
+      n == 0 -> acc
+      true -> rpower2 x, (n - 1), (acc * x)
     end
   end
 end

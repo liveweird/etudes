@@ -92,4 +92,20 @@ defmodule Etudes4Test do
     assert Etudes4.rpower(2,-8) == 1.0/256.0
   end
 
+  test "number to power 0 #2" do
+    assert Etudes4.rpower2(4,0) == 1
+  end
+
+  test "number to power 1 #2" do
+    assert Etudes4.rpower2(4,1) == 4
+  end
+
+  test "number to power 8 #2" do
+    assert Etudes4.rpower2(2,8) == 256
+  end
+
+  test "number to power -8 #2" do
+    assert Etudes4.rpower2(2,-8) == 1.0/256.0
+  end
+
 end
