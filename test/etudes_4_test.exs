@@ -76,4 +76,20 @@ defmodule Etudes4Test do
     assert Etudes4.gcd(25,20) == 5
   end
 
+  test "number to power 0" do
+    assert Etudes4.rpower(4,0) == 1
+  end
+
+  test "number to power 1" do
+    assert Etudes4.rpower(4,1) == 4
+  end
+
+  test "number to power 8" do
+    assert Etudes4.rpower(2,8) == 256
+  end
+
+  test "number to power -8" do
+    assert Etudes4.rpower(2,-8) == 1.0/256.0
+  end
+
 end

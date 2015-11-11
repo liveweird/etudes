@@ -16,6 +16,9 @@ defmodule Etudes4 do
     end
   end
 
+  @doc """
+    Greatest common denominator
+  """
   @spec gcd(number(), number()) :: number()
   def gcd(x, y) when x > 0 and y > 0 do
     cond do
@@ -25,4 +28,15 @@ defmodule Etudes4 do
     end
   end
 
+  @doc """
+    Raise x to power n
+  """
+  @spec rpower(number(), number()) :: number()
+  def rpower(x, n) do
+    case {x,n} do
+      {a,0} -> 1
+      {a,b} when b > 0 -> a * rpower a, (b - 1)
+      {a,b} when b < 0 -> 1 / rpower a, (b * -1)
+    end
+  end
 end
