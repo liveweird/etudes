@@ -16,4 +16,13 @@ defmodule Etudes4 do
     end
   end
 
+  @spec gcd(number(), number()) :: number()
+  def gcd(x, y) when x > 0 and y > 0 do
+    cond do
+      x == y -> x
+      x < y -> gcd(y - x, x)
+      y < x -> gcd(x - y, y)
+    end
+  end
+
 end

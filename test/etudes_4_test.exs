@@ -52,4 +52,28 @@ defmodule Etudes4Test do
     assert catch_error Etudes4.area(:triangle,4,5) == UndefinedFunctionError
   end
 
+  test "greatest common denominator if zero" do
+    assert catch_error Etudes4.gcd(4,0) == ArgumentError
+  end
+
+  test "greatest common denominator if equal" do
+    assert Etudes4.gcd(4,4) == 4
+  end
+
+  test "greatest common denominator if text" do
+    assert catch_error Etudes4.gcd(4,"4") == ArgumentError
+  end
+
+  test "greatest common denominator if primes" do
+    assert Etudes4.gcd(3,5) == 1
+  end
+
+  test "greatest common denominator if 1st lower" do
+    assert Etudes4.gcd(8,12) == 4
+  end
+
+  test "greatest common denominator if 2nd lower" do
+    assert Etudes4.gcd(25,20) == 5
+  end
+
 end
