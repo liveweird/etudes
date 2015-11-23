@@ -24,14 +24,25 @@ defmodule Etudes5 do
   @doc """
     return number from user input
   """
-  @spec get_number(String.t, (() -> integer())) :: integer()
-  def get_number(prompt, fun \\ fn -> IO.gets end) do
-    variable = fun.() |> String.strip |> Integer.parse |> elem(0)
-    # Logger.info "Output: [#{inspect variable}]"
+  @spec get_number(String.t, list()) :: integer()
+  def get_number(prompt, [ x | xs ]) do
+    variable = get_number(prompt, x)
     case variable do
-      x when is_number(x) -> x
-      _ -> get_number(prompt, fun)
+      {:ok, a} -> a
+      {:error, _} -> get_number(prompt, xs)
     end
+  end
+
+  @spec get_number(String.t, (... -> any) | none) :: integer()
+  def get_number(prompt, func \\ [ fn -> IO.gets end ]) do
+    result =
+    try do
+      variable = func.() |> String.strip |> Integer.parse |> elem(0)
+      {:ok, variable}
+    rescue
+      err in ArgumentError -> {:error, err}
+    end
+    result
   end
 
   @doc """

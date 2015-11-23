@@ -37,7 +37,11 @@ defmodule Etudes5Test do
   end
 
   test "get simple '1'" do
-    assert Etudes5.get_number("Whatever", fn -> "    1" end) == 1
+    assert Etudes5.get_number("Whatever", [ fn -> "    1" end ]) == 1
+  end
+
+  test "get non-numeric value" do
+    assert Etudes5.get_number("Whatever", [ fn -> "   aaaa  " end, fn -> "2" end ]) == 2
   end
 
 end
