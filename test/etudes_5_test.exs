@@ -44,4 +44,12 @@ defmodule Etudes5Test do
     assert Etudes5.get_number("Whatever", [ fn -> "   aaaa  " end, fn -> "2" end ]) == 2
   end
 
+  test "get values with 2 digits" do
+    assert Etudes5.get_number("Whatever", [ fn -> " 23 " end ]) == 23
+  end
+
+  test "get with 2 numeric values" do
+    assert Etudes5.get_number("Whatever", [ fn -> " 2 34 " end ]) == 2
+  end
+
 end
