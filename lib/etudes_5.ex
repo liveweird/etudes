@@ -24,32 +24,46 @@ defmodule Etudes5 do
   @doc """
     return number from user input
   """
-  @spec get_number(String.t, list()) :: integer()
-  def get_number(prompt, [ x | xs ]) do
-    variable = get_number(prompt, x)
-    case variable do
-      {:ok, a} -> a
-      {:error, _} -> get_number(prompt, xs)
+  @spec get_number(String.t, integer(), list()) :: integer()
+  def get_number(prompt, cnt, [ x | xs ]) do
+    cond do
+      cnt <= 0 -> []
+      true ->
+        variable = get_number(prompt, cnt, x)
+        temp =
+        case variable do
+          {:ok, a} -> [ a | get_number(prompt, cnt - 1, xs) ]
+          {:error, _} -> get_number(prompt, cnt, xs)
+        end
     end
   end
 
-  @spec get_number(String.t, (... -> any) | none) :: integer()
-  def get_number(prompt, func \\ [ fn -> IO.gets end ]) do
-    result =
-    try do
-      variable = func.() |> String.strip |> Integer.parse |> elem(0)
-      {:ok, variable}
-    rescue
-      err in ArgumentError -> {:error, err}
+  @spec get_number(String.t, integer(), (... -> any) | none) :: integer()
+  def get_number(prompt, cnt \\ 1, func \\ [ fn -> IO.gets end ]) do
+    cond do
+      cnt <= 0 -> []
+      true ->
+        result =
+        try do
+          variable = func.() |> String.strip |> Integer.parse |> elem(0)
+          {:ok, variable}
+        rescue
+          err in ArgumentError -> {:error, err}
+        end
+        result
     end
-    result
   end
 
   @doc """
     return two dimensions from command prompt
   """
-  @spec get_dimensions(String.t,String.t) :: tuple()
-  def get_dimensions(prompt1, prompt2) do
+  @spec get_dimensions(String.t, String.t, list()) :: tuple()
+  def get_dimensions(prompt1, prompt2, [ x | xs ]) do
+    {-1, -1}
+  end
+
+  @spec get_dimensions(String.t, String.t, (... -> any) | none) :: tuple()
+  def get_dimensions(prompt1, prompt2, func \\ [ fn -> IO.gets end ]) do
     {-1, -1}
   end
 
