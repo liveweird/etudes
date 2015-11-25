@@ -39,13 +39,13 @@ defmodule Etudes5 do
   end
 
   @spec get_number(String.t, integer(), (... -> any) | none) :: integer()
-  def get_number(prompt, cnt \\ 1, func \\ [ fn -> IO.gets end ]) do
+  def get_number(prompt, cnt \\ 1, func \\ [ fn(_) -> IO.gets end ]) do
     cond do
       cnt <= 0 -> []
       true ->
         result =
         try do
-          variable = func.() |> String.strip |> Integer.parse |> elem(0)
+          variable = func.(prompt) |> String.strip |> Integer.parse |> elem(0)
           {:ok, variable}
         rescue
           err in ArgumentError -> {:error, err}
@@ -59,12 +59,12 @@ defmodule Etudes5 do
   """
   @spec get_dimensions(String.t, String.t, list()) :: tuple()
   def get_dimensions(prompt1, prompt2, [ x | xs ]) do
-    {-1, -1}
+    get_number(prompt1, 2, [x | xs])
   end
 
   @spec get_dimensions(String.t, String.t, (... -> any) | none) :: tuple()
   def get_dimensions(prompt1, prompt2, func \\ [ fn -> IO.gets end ]) do
-    {-1, -1}
+    get_number(prompt1, 2, func)
   end
 
   @doc """

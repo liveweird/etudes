@@ -37,23 +37,23 @@ defmodule Etudes5Test do
   end
 
   test "get simple '1'" do
-    assert Etudes5.get_number("Whatever", 1, [ fn -> "    1" end ]) == [ 1 ]
+    assert Etudes5.get_number("Whatever", 1, [ fn(_) -> "    1" end ]) == [ 1 ]
   end
 
   test "get non-numeric value" do
-    assert Etudes5.get_number("Whatever", 1, [ fn -> "   aaaa  " end, fn -> "2" end ]) == [ 2 ]
+    assert Etudes5.get_number("Whatever", 1, [ fn(_) -> "   aaaa  " end, fn(_) -> "2" end ]) == [ 2 ]
   end
 
   test "get values with 2 digits" do
-    assert Etudes5.get_number("Whatever", 1, [ fn -> " 23 " end ]) == [ 23 ]
+    assert Etudes5.get_number("Whatever", 1, [ fn(_) -> " 23 " end ]) == [ 23 ]
   end
 
   test "get with 2 numeric values" do
-    assert Etudes5.get_number("Whatever", 1, [ fn -> " 2 34 " end ]) == [ 2 ]
+    assert Etudes5.get_number("Whatever", 1, [ fn(_) -> " 2 34 " end ]) == [ 2 ]
   end
 
   test "get 2 proper numeric values" do
-    assert Etudes5.get_dimensions("Whatever", "Whatever", [ fn -> "2" end, fn -> "5" end ]) == [ 2, 5 ]
+    assert Etudes5.get_dimensions("Whatever", "Whatever", [ fn(_) -> "2" end, fn(_) -> "5" end ]) == [ 2, 5 ]
   end
 
 end
