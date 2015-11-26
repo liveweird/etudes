@@ -40,6 +40,14 @@ defmodule Etudes5Test do
     assert Etudes5.get_number("Whatever", 1, [ fn(_) -> "    1" end ]) == [ 1 ]
   end
 
+  test "get simple '1', check good prompt" do
+    assert Etudes5.get_number("Whatever", 1, [ fn("Whatever") -> "    1" end ]) == [ 1 ]
+  end
+
+  test "get simple '1', check wrong prompt" do
+    assert_raise FunctionClauseError, fn -> Etudes5.get_number("Whatever", 1, [ fn("Anything") -> "    1" end ]) end
+  end
+
   test "get non-numeric value" do
     assert Etudes5.get_number("Whatever", 1, [ fn(_) -> "   aaaa  " end, fn(_) -> "2" end ]) == [ 2 ]
   end
@@ -54,6 +62,18 @@ defmodule Etudes5Test do
 
   test "get 2 proper numeric values" do
     assert Etudes5.get_dimensions("Whatever", "Whatever", [ fn(_) -> "2" end, fn(_) -> "5" end ]) == [ 2, 5 ]
+  end
+
+  test "get 2 proper numeric values, check good prompts" do
+    assert Etudes5.get_dimensions("ABC", "DEF", [ fn("ABC") -> "2" end, fn("DEF") -> "5" end ]) == [ 2, 5 ]
+  end
+
+  test "get 2 proper numeric values, check wrong prompts #1" do
+    assert_raise FunctionClauseError, fn -> Etudes5.get_dimensions("ABC", "DEF", [ fn("ABC") -> "2" end, fn("XYZ") -> "5" end ]) end
+  end
+
+  test "get 2 proper numeric values, check wrong prompts #2" do
+    assert_raise FunctionClauseError, fn -> Etudes5.get_dimensions("ABC", "DEF", [ fn("XYZ") -> "2" end, fn("ABC") -> "5" end ]) end
   end
 
 end
