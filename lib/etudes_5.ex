@@ -24,46 +24,42 @@ defmodule Etudes5 do
   @doc """
     return number from user input
   """
-  @spec get_number(list(), integer(), list()) :: integer()
-  def get_number(prompts, cnt, [ x | xs ]) do
+  @spec get_number(list(), list()) :: integer()
+  def get_number(prompts, [ x | xs ]) do
     case prompts do
-      [ prompt | rest ] when cnt > 0 ->
-        variable = get_number(prompt, cnt, x)
+      [ prompt | rest ] ->
+        variable = get_number(prompt, x)
         temp =
         case variable do
-          {:ok, a} -> [ a | get_number(rest, cnt - 1, xs) ]
-          {:error, _} -> get_number(prompts, cnt, xs)
+          {:ok, a} -> [ a | get_number(rest, xs) ]
+          {:error, _} -> get_number(prompts, xs)
         end
-        # Logger.info "get_number(list): |#{inspect(temp)}|."
+        Logger.info "get_number(list): |#{inspect(temp)}|."
         temp
-      prompt when cnt > 0 ->
-        variable = get_number(prompt, cnt, x)
+      [ prompt ] ->
+        variable = get_number(prompt, x)
         temp =
         case variable do
           {:ok, a} -> [ a ]
-          {:error, _} -> get_number(prompt, cnt, xs)
+          {:error, _} -> get_number([ prompt ], xs)
         end
-        # Logger.info "get_number(list): |#{inspect(temp)}|."
+        Logger.info "get_number(list): |#{inspect(temp)}|."
         temp
       _ -> []
     end
   end
 
-  @spec get_number(String.t, integer(), (... -> any) | none) :: integer()
-  def get_number(prompt, cnt \\ 1, func \\ [ fn(_) -> IO.gets end ]) do
-    cond do
-      cnt <= 0 -> []
-      true ->
-        result =
-        try do
-          variable = func.(prompt) |> String.strip |> Integer.parse |> elem(0)
-          {:ok, variable}
-        rescue
-          err in ArgumentError -> {:error, err}
-        end
-        # Logger.info "get_number(item): |#{inspect(result)}|."
-        result
+  @spec get_number(String.t, (... -> any) | none) :: integer()
+  def get_number(prompt, func \\ [ fn(_) -> IO.gets end ]) do
+    result =
+    try do
+      variable = func.(prompt) |> String.strip |> Integer.parse |> elem(0)
+      {:ok, variable}
+    rescue
+      err in ArgumentError -> {:error, err}
     end
+    Logger.info "get_number(item): |#{inspect(result)}|."
+    result
   end
 
   @doc """
@@ -71,7 +67,7 @@ defmodule Etudes5 do
   """
   @spec get_dimensions(String.t, String.t, list()) :: tuple()
   def get_dimensions(prompt1, prompt2, [ x | xs ]) do
-    get_number([ prompt1 | prompt2 ], 2, [ x | xs ])
+    get_number([ prompt1 | prompt2 ], [ x | xs ])
   end
 
   @doc """

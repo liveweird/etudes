@@ -37,27 +37,27 @@ defmodule Etudes5Test do
   end
 
   test "get simple '1'" do
-    assert Etudes5.get_number([ "Whatever" ], 1, [ fn(_) -> "    1" end ]) == [ 1 ]
+    assert Etudes5.get_number([ "Whatever" ], [ fn(_) -> "    1" end ]) == [ 1 ]
   end
 
   test "get simple '1', check good prompt" do
-    assert Etudes5.get_number([ "Whatever" ], 1, [ fn("Whatever") -> "    1" end ]) == [ 1 ]
+    assert Etudes5.get_number([ "Whatever" ], [ fn("Whatever") -> "    1" end ]) == [ 1 ]
   end
 
   test "get simple '1', check wrong prompt" do
-    assert_raise FunctionClauseError, fn -> Etudes5.get_number([ "Whatever" ], 1, [ fn("Anything") -> "    1" end ]) end
+    assert_raise FunctionClauseError, fn -> Etudes5.get_number([ "Whatever" ], [ fn("Anything") -> "    1" end ]) end
   end
 
   test "get non-numeric value" do
-    assert Etudes5.get_number([ " Whatever" ], 1, [ fn(_) -> "   aaaa  " end, fn(_) -> "2" end ]) == [ 2 ]
+    assert Etudes5.get_number([ " Whatever" ], [ fn(_) -> "   aaaa  " end, fn(_) -> "2" end ]) == [ 2 ]
   end
 
   test "get values with 2 digits" do
-    assert Etudes5.get_number([ "Whatever" ], 1, [ fn(_) -> " 23 " end ]) == [ 23 ]
+    assert Etudes5.get_number([ "Whatever" ], [ fn(_) -> " 23 " end ]) == [ 23 ]
   end
 
   test "get with 2 numeric values" do
-    assert Etudes5.get_number([ "Whatever" ], 1, [ fn(_) -> " 2 34 " end ]) == [ 2 ]
+    assert Etudes5.get_number([ "Whatever" ], [ fn(_) -> " 2 34 " end ]) == [ 2 ]
   end
 
   test "get 2 proper numeric values" do
