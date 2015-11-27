@@ -24,17 +24,28 @@ defmodule Etudes5 do
   @doc """
     return number from user input
   """
-  @spec get_number(String.t, integer(), list()) :: integer()
-  def get_number(prompt, cnt, [ x | xs ]) do
-    cond do
-      cnt <= 0 -> []
-      true ->
+  @spec get_number(list(), integer(), list()) :: integer()
+  def get_number(prompts, cnt, [ x | xs ]) do
+    case prompts do
+      [ prompt | rest ] when cnt > 0 ->
         variable = get_number(prompt, cnt, x)
         temp =
         case variable do
-          {:ok, a} -> [ a | get_number(prompt, cnt - 1, xs) ]
+          {:ok, a} -> [ a | get_number(rest, cnt - 1, xs) ]
+          {:error, _} -> get_number(prompts, cnt, xs)
+        end
+        # Logger.info "get_number(list): |#{inspect(temp)}|."
+        temp
+      prompt when cnt > 0 ->
+        variable = get_number(prompt, cnt, x)
+        temp =
+        case variable do
+          {:ok, a} -> [ a ]
           {:error, _} -> get_number(prompt, cnt, xs)
         end
+        # Logger.info "get_number(list): |#{inspect(temp)}|."
+        temp
+      _ -> []
     end
   end
 
@@ -50,6 +61,7 @@ defmodule Etudes5 do
         rescue
           err in ArgumentError -> {:error, err}
         end
+        # Logger.info "get_number(item): |#{inspect(result)}|."
         result
     end
   end
@@ -59,12 +71,7 @@ defmodule Etudes5 do
   """
   @spec get_dimensions(String.t, String.t, list()) :: tuple()
   def get_dimensions(prompt1, prompt2, [ x | xs ]) do
-    get_number(prompt1, 2, [x | xs])
-  end
-
-  @spec get_dimensions(String.t, String.t, (... -> any) | none) :: tuple()
-  def get_dimensions(prompt1, prompt2, func \\ [ fn -> IO.gets end ]) do
-    get_number(prompt1, 2, func)
+    get_number([ prompt1 | prompt2 ], 2, [ x | xs ])
   end
 
   @doc """
