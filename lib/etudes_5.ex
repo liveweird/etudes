@@ -24,33 +24,37 @@ defmodule Etudes5 do
   @doc """
     return number from user input
   """
-  @spec get_number(list(), list()) :: integer()
+  @spec get_number(list(), list()) :: list()
+  def get_number([], []) do
+    []
+  end
+
+  @spec get_number(list(), list()) :: list()
   def get_number(prompts, [ x | xs ]) do
     case prompts do
       [ prompt | rest ] ->
-        variable = get_number(prompt, x)
+        variable = get_part_number(prompt, x)
         temp =
         case variable do
           {:ok, a} -> [ a | get_number(rest, xs) ]
           {:error, _} -> get_number(prompts, xs)
         end
-        Logger.info "get_number(list): |#{inspect(temp)}|."
+        # Logger.info "get_number1(list): |#{inspect(temp)}|."
         temp
-      [ prompt ] ->
-        variable = get_number(prompt, x)
+      prompt ->
+        variable = get_part_number(prompt, x)
         temp =
         case variable do
           {:ok, a} -> [ a ]
-          {:error, _} -> get_number([ prompt ], xs)
+          {:error, _} -> get_number(prompt, xs)
         end
-        Logger.info "get_number(list): |#{inspect(temp)}|."
+        # Logger.info "get_number2(list): |#{inspect(temp)}|."
         temp
-      _ -> []
     end
   end
 
-  @spec get_number(String.t, (... -> any) | none) :: integer()
-  def get_number(prompt, func \\ [ fn(_) -> IO.gets end ]) do
+  @spec get_part_number(String.t, (... -> any) | none) :: integer()
+  def get_part_number(prompt, func \\ fn(_) -> IO.gets end) do
     result =
     try do
       variable = func.(prompt) |> String.strip |> Integer.parse |> elem(0)
@@ -58,7 +62,7 @@ defmodule Etudes5 do
     rescue
       err in ArgumentError -> {:error, err}
     end
-    Logger.info "get_number(item): |#{inspect(result)}|."
+    # Logger.info "get_particular_number(item): |#{inspect(result)}|."
     result
   end
 

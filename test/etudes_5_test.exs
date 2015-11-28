@@ -61,7 +61,7 @@ defmodule Etudes5Test do
   end
 
   test "get 2 proper numeric values" do
-    assert Etudes5.get_dimensions("Whatever", "Whatever", [ fn(_) -> "2" end, fn(_) -> "5" end ]) == [ 2, 5 ]
+    assert Etudes5.get_dimensions("Whatever", "Anything", [ fn(_) -> "2" end, fn(_) -> "5" end ]) == [ 2, 5 ]
   end
 
   test "get 2 proper numeric values, check good prompts" do
