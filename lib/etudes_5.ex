@@ -79,7 +79,7 @@ defmodule Etudes5 do
   """
   @spec calculate(atom(),integer(),integer()) :: number()
   def calculate(shape, dim1, dim2) do
-    -1
+    Etudes4.area({shape, dim1, dim2})
   end
 
 end
