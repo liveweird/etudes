@@ -82,4 +82,23 @@ defmodule Etudes5 do
     Etudes4.area({shape, dim1, dim2})
   end
 
+  @doc """
+    end to end
+
+    iex> Etudes5.area(fn(_) -> "t" end, fn(_) -> "4" end, fn(_) -> "5" end)
+    10.0
+
+    iex> Etudes5.area(fn(_) -> "r" end, fn(_) -> "4" end, fn(_) -> "5" end)
+    20
+
+    iex> Etudes5.area(fn(_) -> "e" end, fn(_) -> "4" end, fn(_) -> "5" end)
+    62.83185307179586
+  """
+  @spec area((... -> String.t) | none, (... -> String.t) | none, (... -> String.t) | none) :: integer()
+  def area(func1 \\ fn(a) -> IO.gets(a) end, func2 \\ fn(b) -> IO.gets(b) end, func3 \\ fn(c) -> IO.gets(c) end) do
+    shape = Etudes5.char_to_shape(func1.("aaa"))
+    dims = Etudes5.get_dimensions("bbb", "ccc", [ func2, func3 ])
+    Etudes5.calculate(shape, Enum.at(dims, 0), Enum.at(dims, 1))
+  end
+
 end
