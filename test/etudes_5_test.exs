@@ -57,7 +57,7 @@ defmodule Etudes5Test do
   end
 
   test "get with 2 numeric values" do
-    assert Etudes5.get_number([ "Whatever" ], [ fn(_) -> " 2 34 " end ]) == [ 2 ]
+    assert Etudes5.get_number([ "Whatever" ], [ fn(_) -> " 2 34 " end, fn(_) -> "  5 " end ]) == [ 5 ]
   end
 
   test "get 2 proper numeric values" do

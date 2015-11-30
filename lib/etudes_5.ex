@@ -55,13 +55,15 @@ defmodule Etudes5 do
 
   @spec get_part_number(String.t, (... -> any) | none) :: integer()
   def get_part_number(prompt, func \\ fn(_) -> IO.gets end) do
+    input = func.(prompt) |> String.strip
+    matched = Regex.run(~r/^\s*(\d+)\s*$/, input)
+
     result =
-    try do
-      variable = func.(prompt) |> String.strip |> Integer.parse |> elem(0)
-      {:ok, variable}
-    rescue
-      err in ArgumentError -> {:error, err}
-    end
+      case matched do
+        [x|rest] -> {:ok, x |> Integer.parse |> elem(0)}
+        [x] -> {:ok, x |> Integer.parse |> elem(0)}
+        _ -> {:error, "Nonononono"}
+      end
     # Logger.info "get_particular_number(item): |#{inspect(result)}|."
     result
   end
@@ -93,6 +95,9 @@ defmodule Etudes5 do
 
     iex> Etudes5.area(fn(_) -> "e" end, fn(_) -> "4" end, fn(_) -> "5" end)
     62.83185307179586
+
+    iex> Etudes5.area(fn(_) -> "t" end, fn(_) -> "4" end, fn(_) -> "5.5" end)
+    ** (FunctionClauseError) no function clause matching in Etudes5.get_number/2
   """
   @spec area((... -> String.t) | none, (... -> String.t) | none, (... -> String.t) | none) :: integer()
   def area(func1 \\ fn(a) -> IO.gets(a) end, func2 \\ fn(b) -> IO.gets(b) end, func3 \\ fn(c) -> IO.gets(c) end) do
