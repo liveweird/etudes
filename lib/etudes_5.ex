@@ -106,4 +106,12 @@ defmodule Etudes5 do
     Etudes5.calculate(shape, Enum.at(dims, 0), Enum.at(dims, 1))
   end
 
+  @doc """
+    split date into parts
+  """
+  @spec date_parts(String.t) :: list()
+  def date_parts(date) do
+    result = String.split(date, "-", [ trim: true, parts: 3 ])
+  end
+
 end

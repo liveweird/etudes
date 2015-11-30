@@ -88,4 +88,8 @@ defmodule Etudes5Test do
     assert Etudes5.calculate(:ellipse, 4, 5) == :math.pi * 4 * 5
   end
 
+  test "split date into parts" do
+    assert Etudes5.date_parts("2014-05-09") == ["2014", "05", "09"]
+  end
+
 end
