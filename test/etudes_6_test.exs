@@ -37,10 +37,28 @@ defmodule Etudes6Test do
     assert Etudes6.maximum([7,8,6,8]) == 8
   end
 
-  test "range of empty list is empty"
-  test "range of sole value is this value twice"
-  test "range of pair is proper"
-  test "range of non-empty list is proper"
-  test "range of equal values is proper"
+  test "range of empty list is empty" do
+    assert_raise ArgumentError, fn -> Etudes6.range([]) end
+  end
+
+  test "range of sole value is this value twice" do
+    assert Etudes6.range([5]) == [5,5]
+  end
+
+  test "range of pair is proper" do
+    assert Etudes6.range([8,5]) == [5,8]
+  end
+
+  test "range of equal pair is proper" do
+    assert Etudes6.range([8,8]) == [8,8]
+  end
+
+  test "range of non-empty list is proper" do
+    assert Etudes6.range([3,8,5,8,7,6]) == [3,8]
+  end
+
+  test "range of equal values is proper" do
+    assert Etudes6.range([5,5,5]) == [5,5]
+  end
 
 end

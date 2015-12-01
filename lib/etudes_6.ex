@@ -51,7 +51,7 @@ defmodule Etudes6 do
   """
   @spec range(list()) :: list()
   def range(values) do
-    [ -1,  1 ]
+    [minimum(values),maximum(values)]
   end
 
 
