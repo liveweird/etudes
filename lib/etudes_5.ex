@@ -60,8 +60,8 @@ defmodule Etudes5 do
 
     result =
       case matched do
-        [x|rest] -> {:ok, x |> Integer.parse |> elem(0)}
-        [x] -> {:ok, x |> Integer.parse |> elem(0)}
+        [x|_] -> {:ok, x |> Integer.parse |> elem(0)}
+        # [x] -> {:ok, x |> Integer.parse |> elem(0)}
         _ -> {:error, "Nonononono"}
       end
     # Logger.info "get_particular_number(item): |#{inspect(result)}|."
@@ -111,7 +111,7 @@ defmodule Etudes5 do
   """
   @spec date_parts(String.t) :: list()
   def date_parts(date) do
-    result = String.split(date, "-", [ trim: true, parts: 3 ])
+    String.split(date, "-", [ trim: true, parts: 3 ])
   end
 
 end
