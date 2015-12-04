@@ -84,7 +84,7 @@ defmodule Etudes5Test do
     assert Etudes5.calculate(:rectangle, 4, 5) == 20
   end
 
-  test "calculate triangle area" do
+  test "calculate ellipse area" do
     assert Etudes5.calculate(:ellipse, 4, 5) == :math.pi * 4 * 5
   end
 
