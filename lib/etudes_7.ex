@@ -19,28 +19,26 @@ defmodule Etudes7 do
   """
   @spec make_geo_list(String.t()) :: list()
   def make_geo_list(file_name) do
-    result = File.open(file_name, [:read, :utf8])
     countries = []
-    case result do
-      { :ok, device } ->
-        country = nil
-        Enum.each(IO.read(device, :line), fn (line) ->
-            atoms = line |> String.split(",") |> String.strip
-            country =
-              case atoms do
-                [ country_name, language ] -> %Country{name: country_name, language: language, cities: []}
-                [ city_name, population, latitude, longitude ] -> add_city(country, %City{name: city_name, population: population, latitude: latitude, longitude: longitude})
-                _ -> raise RuntimeError, "Wrong file format"
-              end
-            update_country(countries, country)
-          end)
-        File.close(device)
-      { :error, error_code } -> raise RuntimeError, "Can't read file! #{error_code}"
-    end
+    country = nil
+    File.stream!(file_name, [:read, :utf8], :line) |>
+    Enum.each(fn (line) ->
+      atoms = line |> to_string |> String.split(",") |> Enum.map(&String.strip(&1))
+      country =
+        case atoms do
+          [ country_name, language ] -> %Country{name: country_name, language: language, cities: []}
+          [ city_name, population, latitude, longitude ] -> add_city(country, %City{name: city_name, population: population, latitude: latitude, longitude: longitude})
+          _ -> raise RuntimeError, "Wrong file format"
+        end
+      countries = update_country(countries, country)
+    end)
+    countries
   end
 
   @spec add_city(%Country{}, %City{}) :: %Country{}
   defp add_city(country, city) do
+    Logger.info "Country: |#{inspect country}|."
+    Logger.info "City: |#{inspect city}|."
     if country == nil do
       raise RuntimeError, "City can't exist w/o country!"
     end
@@ -57,7 +55,7 @@ defmodule Etudes7 do
         else
           [ head | update_country(tail, country) ]
         end
-      nil -> [ country ]
+      [] -> [ country ]
     end
   end
 
