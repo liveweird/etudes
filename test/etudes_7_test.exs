@@ -18,11 +18,13 @@ defmodule Etudes7Test do
 
   test "languages are proper" do
     countries = Etudes7.make_geo_list("./test/geography.csv")
-    map = %{:Germany => "German", :Peru => "Spanish", :"South Korea" => "Korean", :Spain => "Spanish"}
+    expected_map = %{:Germany => "German", :Peru => "Spanish", :"South Korea" => "Korean", :Spain => "Spanish"}
     assert Enum.all?(countries, fn (country) ->
-      name = country[:name]
-      lang = country[:language]
-      expected = map[name]
+      name = country.name
+      lang = country.language
+      Logger.info "lang: |#{inspect lang}|."
+      expected = expected_map[name]
+      Logger.info "expected: |#{inspect expected}|."
       lang == expected
     end) == true
   end
