@@ -38,12 +38,32 @@ defmodule Etudes7Test do
     assert Enum.all?(zipped, fn (el) -> elem(el, 0) == elem(el, 1) end) == true
   end
 
-  test "Granada's population is 234325"
+  test "Granada's population is 234325" do
+    countries = Etudes7.make_geo_list("./test/geography.csv")
+    spain = countries |> Enum.find(fn (country) -> country.name == "Spain" end)
+    granada = spain.cities |> Enum.find(fn (city) -> city.name == "Granada" end)
+    assert elem(Integer.parse(granada.population), 0) == 234325
+  end
 
-  test "Daegu's latitude is 35.87028"
+  test "Daegu's latitude is 35.87028" do
+    countries = Etudes7.make_geo_list("./test/geography.csv")
+    korea = countries |> Enum.find(fn (country) -> country.name == "South Korea" end)
+    daegu = korea.cities |> Enum.find(fn (city) -> city.name == "Daegu" end)
+    assert daegu.latitude == "35.87028"
+  end
 
-  test "Lima's longitude is -77.02824"
+  test "Lima's longitude is -77.02824" do
+    countries = Etudes7.make_geo_list("./test/geography.csv")
+    peru = countries |> Enum.find(fn (country) -> country.name == "Peru" end)
+    lima = peru.cities |> Enum.find(fn (city) -> city.name == "Lima" end)
+    assert lima.longitude == "-77.02824"
+  end
 
-  test "Valencia is not in Spain"
+  test "Valencia is not in Spain" do
+    countries = Etudes7.make_geo_list("./test/geography.csv")
+    spain = countries |> Enum.find(fn (country) -> country.name == "Spain" end)
+    valencia = spain.cities |> Enum.find(fn (city) -> city.name == "Valencia" end)
+    assert valencia == nil
+  end
 
 end
