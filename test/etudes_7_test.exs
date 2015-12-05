@@ -66,4 +66,19 @@ defmodule Etudes7Test do
     assert valencia == nil
   end
 
+  test "Total population - polish" do
+    countries = Etudes7.make_geo_list("./test/geography.csv")
+    assert Etudes7.total_population(countries, "Polish") == 0
+  end
+
+  test "Total population - korean" do
+    countries = Etudes7.make_geo_list("./test/geography.csv")
+    assert Etudes7.total_population(countries, "Korean") == (10349312 + 3678555 + 2566540)
+  end
+
+  test "Total population - spanish" do
+    countries = Etudes7.make_geo_list("./test/geography.csv")
+    assert Etudes7.total_population(countries, "Spanish") == (3255944 + 234325 + 1621537 + 7737002 + 312140 + 841130)
+  end
+
 end

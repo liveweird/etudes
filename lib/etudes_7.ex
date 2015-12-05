@@ -61,4 +61,17 @@ defmodule Etudes7 do
     end
   end
 
+  @spec total_population(list(), String.t()) :: integer()
+  def total_population(countries, language) do
+    valid_countries = countries |> Enum.filter(fn (country) -> country.language == language end)
+    population = valid_countries
+      |> Enum.flat_map(fn (country) -> country.cities end)
+      |> Enum.map(fn (city) ->
+        temp = Integer.parse(city.population)
+        elem(temp, 0)
+      end)
+      |> Enum.sum
+    population
+  end
+
 end
