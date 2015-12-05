@@ -79,4 +79,14 @@ defmodule Etudes7 do
     def valid?(data)
   end
 
+  defimpl Valid, for: City do
+    def valid?(%City{name: _, population: population, latitude: latitude, longitude: longitude}) do
+      population >= 0 and
+      latitude >= -90 and
+      latitude <= 90 and
+      longitude >= -180 and
+      longitude <= 180
+    end
+  end
+
 end
