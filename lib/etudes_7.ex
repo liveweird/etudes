@@ -74,4 +74,9 @@ defmodule Etudes7 do
     population
   end
 
+  defprotocol Valid do
+    @doc "Returns true if data is considered valid"
+    def valid?(data)
+  end
+
 end

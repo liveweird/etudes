@@ -81,4 +81,14 @@ defmodule Etudes7Test do
     assert Etudes7.total_population(countries, "Spanish") == (3255944 + 234325 + 1621537 + 7737002 + 312140 + 841130)
   end
 
+  test "Good city is good" do
+    good = %Etudes7.City{name: "Hamburg", population: 1739117, latitude: 53.57532, longitude: 10.01534}
+    assert Etudes7.Valid.valid?(good) == true
+  end
+
+  test "Bad city is bad" do
+    bad = %Etudes7.City{name: "Nowhere", population: -1000, latitude: 37.1234, longitude: -12.457}
+    assert Etudes7.Valid.valid?(bad) == false
+  end
+
 end
