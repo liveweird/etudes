@@ -18,23 +18,22 @@ defmodule Etudes7Test do
 
   test "languages are proper" do
     countries = Etudes7.make_geo_list("./test/geography.csv")
-    expected_map = %{:Germany => "German", :Peru => "Spanish", :"South Korea" => "Korean", :Spain => "Spanish"}
+    expected_map = %{"Germany" => "German", "Peru" => "Spanish", "South Korea" => "Korean", "Spain" => "Spanish"}
     assert Enum.all?(countries, fn (country) ->
       name = country.name
       lang = country.language
-      Logger.info "lang: |#{inspect lang}|."
-      expected = expected_map[name]
-      Logger.info "expected: |#{inspect expected}|."
+      expected = expected_map |> Map.fetch!(name)
       lang == expected
     end) == true
   end
 
   test "there are 3 cities in Germany: Hamburg, Frankfurt & Dresden" do
     countries = Etudes7.make_geo_list("./test/geography.csv")
-    names = [ "Hamburg", "Frankfurt", "Dresden" ]
-    germany = countries |> Enum.find(fn (country) -> country[:name] == "Germany" end)
-    cities = germany[:cities] |> Enum.map(fn (elem) -> elem.name end) |> Enum.uniq |> Enum.sort
+    names = [ "Dresden", "Frankfurt am Main", "Hamburg" ]
+    germany = countries |> Enum.find(fn (country) -> country.name == "Germany" end)
+    cities = germany.cities |> Enum.map(fn (elem) -> elem.name end) |> Enum.uniq |> Enum.sort
     zipped = Enum.zip(cities, names)
+    # Logger.info "cities: |#{inspect zipped}|."
     assert Enum.count(zipped) == 3
     assert Enum.all?(zipped, fn (el) -> elem(el, 0) == elem(el, 1) end) == true
   end

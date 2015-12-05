@@ -54,5 +54,4 @@ defmodule Etudes6 do
     [minimum(values),maximum(values)]
   end
 
-
 end
