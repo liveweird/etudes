@@ -5,7 +5,11 @@ defmodule Etudes9Test do
   require Logger
   require IEx
 
-  test "generate deck is proper"
+  test "generate deck is proper" do
+    deck = Etudes9.Deck.create()
+    valid = Etudes9.Deck.validate_deck(deck)
+    assert valid == true
+  end
 
   test "shuffled deck is proper"
 

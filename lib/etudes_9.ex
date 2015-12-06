@@ -6,8 +6,6 @@ defmodule Etudes9 do
   require Logger
   require IEx
 
-  # suits = { :spade, :heart, :diamond, :club }
-
   defmodule Card do
     defstruct honour: 2, suit: :spade
   end
@@ -20,6 +18,12 @@ defmodule Etudes9 do
     """
     @spec create :: %Deck{}
     def create do
+      cards =
+        for honour <- 2 .. 14,
+          suit <- [ :spade, :heart, :diamond, :club ] do
+            %Card{ honour: honour, suit: suit }
+        end
+      %Deck{ cards: cards }
     end
 
     @doc """
@@ -27,6 +31,13 @@ defmodule Etudes9 do
     """
     @spec shuffle(%Deck{}) :: %Deck{}
     def shuffle(deck) do
+    end
+
+    @doc """
+      Validate whether all cards are present & there are not duplicates
+    """
+    @spec validate_deck(%Deck{}) :: boolean()
+    def validate_deck(deck) do
     end
 
     @doc """
@@ -39,8 +50,8 @@ defmodule Etudes9 do
     @doc """
       Validate whether all cards are present & there are not duplicates
     """
-    @spec validate(list()) :: boolean()
-    def validate(players) do
+    @spec validate_hands(list()) :: boolean()
+    def validate_hands(players) do
     end
 
     @doc """
