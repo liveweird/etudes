@@ -31,7 +31,28 @@ defmodule Etudes9 do
     """
     @spec shuffle(%Deck{}) :: %Deck{}
     def shuffle(deck) do
-      deck
+      # ordered order :)
+      ordered = Enum.to_list 0 .. 51
+      # determine order
+      :random.seed(:erlang.now)
+      reordered = cherry_pick(ordered, [])
+      # fill shuffled deck in assumed order
+      shuffled = reordered |>
+        Enum.map(fn (elem) -> Enum.at(deck.cards, elem) end)
+      %Deck{ cards: shuffled }
+    end
+
+    @spec cherry_pick(list(), list()) :: list()
+    defp cherry_pick(basket, result) do
+      # Logger.info "Basket: |#{inspect result}|."
+      cond do
+        Enum.count(basket) > 0 ->
+          ordinal = :random.uniform(Enum.count(basket)) - 1
+          picked = Enum.at(basket, ordinal)
+          reduced = List.delete_at(basket, ordinal)
+          cherry_pick(reduced, [ picked ] ++ result)
+        true -> result
+      end
     end
 
     @doc """
