@@ -10,6 +10,37 @@ defmodule Etudes9 do
     defstruct honour: 2, suit: :spade
   end
 
+  @doc """
+    Create a new player
+  """
+  @spec create_player() :: pid()
+  def create_player() do
+    spawn fn -> player_loop(self(), []) end
+  end
+
+  @spec player_loop(pid(), list()) :: list()
+  defp player_loop(dealer, cards) do
+    receive do
+      {:pick_card, card} ->
+        new_cards = cards ++ [ card ]
+        player_loop(dealer, new_cards)
+      {:draw_card} ->
+        new_cards =
+          case cards do
+            [ drawn_card | rest ] ->
+              send(dealer, {:drawn_card, drawn_card})
+              rest
+            [] ->
+              send(dealer, {:empty_hand})
+              []
+          end
+        player_loop(dealer, new_cards)
+      {:game_over} -> cards
+    end
+  end
+
+
+
   defmodule Deck do
     defstruct cards: []
 
@@ -91,14 +122,6 @@ defmodule Etudes9 do
     @spec deal(%Deck{}, list()) :: list()
     def deal(deck, players) do
       []
-    end
-
-    @doc """
-      Validate whether all cards are present & there are not duplicates
-    """
-    @spec validate_hands(list()) :: boolean()
-    def validate_hands(players) do
-      false
     end
 
     @doc """

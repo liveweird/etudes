@@ -34,7 +34,16 @@ defmodule Etudes9Test do
     assert different == true
   end
 
-  test "deck dealt between 2 players is still proper"
+  test "deck dealt between 2 players is still proper" do
+    deck = Etudes9.Deck.create()
+    shuffled = Etudes9.Deck.shuffle(deck)
+    player1 = Etudes9.create_player()
+    player2 = Etudes9.create_player()
+    Etudes9.deal([player1, player2])
+    collected = Etudes9.collect([player1, player2])
+    valid = Etudes9.Deck.validate_deck(collected)
+    assert valid == true
+  end
 
   test "round - clear winner"
 
