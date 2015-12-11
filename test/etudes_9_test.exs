@@ -39,8 +39,8 @@ defmodule Etudes9Test do
     shuffled = Etudes9.Deck.shuffle(deck)
     player1 = Etudes9.create_player()
     player2 = Etudes9.create_player()
-    Etudes9.deal([player1, player2])
-    collected = Etudes9.collect([player1, player2])
+    Etudes9.Deck.deal(shuffled, [player1, player2])
+    collected = Etudes9.Deck.collect([player1, player2])
     valid = Etudes9.Deck.validate_deck(collected)
     assert valid == true
   end

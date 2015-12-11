@@ -39,8 +39,6 @@ defmodule Etudes9 do
     end
   end
 
-
-
   defmodule Deck do
     defstruct cards: []
 
@@ -65,7 +63,7 @@ defmodule Etudes9 do
       # ordered order :)
       ordered = Enum.to_list 0 .. 51
       # determine order
-      :random.seed(:erlang.now)
+      :random.seed(:erlang.unique_integer)
       reordered = cherry_pick(ordered, [])
       # fill shuffled deck in assumed order
       shuffled = reordered |>
@@ -121,14 +119,40 @@ defmodule Etudes9 do
     """
     @spec deal(%Deck{}, list()) :: list()
     def deal(deck, players) do
-      []
+      case deck do
+        %Deck{ cards: [ card | rest_cards ] } ->
+          case players do
+            [ player | rest_players ] ->
+              send(player, {:pick_card, card})
+              deal(%Deck{ cards: rest_cards }, rest_players ++ [ player ])
+            _ -> raise RuntimeError, "No players to deal for!"
+          end
+        %Deck{ cards: [] } -> players
+      end
+    end
+
+    @doc """
+      Collect all the cards back from the players
+    """
+    @spec collect(list(), %Deck{} | none) :: %Deck{}
+    def collect(players, collected \\ %Deck{}) do
+      case players do
+        [ player | rest_players ] ->
+          send(player, {:draw_card})
+          receive do
+            {:drawn_card, drawn_card} -> collect(rest_players ++ [ player ], %Deck{ cards: [ drawn_card ] ++ collected })
+            {:empty_hand} -> collect(rest_players, collected)
+          end
+        [] -> collected
+      end
     end
 
     @doc """
       Draw cards, find out the winner & collect the bounty
     """
-    @spec play_round(list()) :: nil
+    @spec play_round(list()) :: list()
     def play_round(players) do
+      players
     end
 
     @doc """
