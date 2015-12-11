@@ -15,22 +15,28 @@ defmodule Etudes9 do
   """
   @spec create_player() :: pid()
   def create_player() do
-    spawn fn -> player_loop(self(), []) end
+    dealer = self()
+    player = spawn fn -> player_loop(dealer, []) end
+    # Logger.info "Dealer #{inspect dealer} spawned a new player #{inspect player}."
+    player
   end
 
   @spec player_loop(pid(), list()) :: list()
   defp player_loop(dealer, cards) do
     receive do
       {:pick_card, card} ->
+        # Logger.info "Player #{inspect self()} picking card: #{inspect card}."
         new_cards = cards ++ [ card ]
         player_loop(dealer, new_cards)
       {:draw_card} ->
         new_cards =
           case cards do
             [ drawn_card | rest ] ->
+              # Logger.info "Player #{inspect self()} drawing card: #{inspect drawn_card} & return it to dealer #{inspect dealer}."
               send(dealer, {:drawn_card, drawn_card})
               rest
             [] ->
+              # Logger.info "Player #{inspect self()} doesn't have any cards to give back to dealer #{inspect dealer}."
               send(dealer, {:empty_hand})
               []
           end
@@ -135,13 +141,17 @@ defmodule Etudes9 do
       Collect all the cards back from the players
     """
     @spec collect(list(), %Deck{} | none) :: %Deck{}
-    def collect(players, collected \\ %Deck{}) do
+    def collect(players, collected \\ %Deck{ cards: [] }) do
       case players do
         [ player | rest_players ] ->
           send(player, {:draw_card})
           receive do
-            {:drawn_card, drawn_card} -> collect(rest_players ++ [ player ], %Deck{ cards: [ drawn_card ] ++ collected })
+            {:drawn_card, drawn_card} ->
+              # Logger.info "Collected card: #{inspect drawn_card}, current stack depth: #{inspect collected.cards|> Enum.count}."
+              collect(rest_players ++ [ player ], %Deck{ cards: [ drawn_card ] ++ collected.cards })
             {:empty_hand} -> collect(rest_players, collected)
+            after
+              1_000 -> raise RuntimeError, "Player #{inspect player} not responding!"
           end
         [] -> collected
       end
