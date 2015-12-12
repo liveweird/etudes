@@ -45,7 +45,20 @@ defmodule Etudes9Test do
     assert valid == true
   end
 
-  test "round - clear winner"
+  test "round - clear winner" do
+    deck = Etudes9.Deck.create([ %Etudes9.Card{ honour: 2, suit: :spade}, %Etudes9.Card{ honour: 3, suit: :spade }])
+    player1 = Etudes9.create_player()
+    player2 = Etudes9.create_player()
+    Etudes9.Deck.deal(deck, [player1, player2])
+    Etudes9.Deck.play_round([player1, player2])
+    collected1 = Etudes9.Deck.collect([player1])
+    collected2 = Etudes9.Deck.collect([player2])
+    assert Enum.count(collected1.cards) == 0
+    card1 = elem(collected2.cards, 0)
+    card2 = elem(collected2.cards, 1)
+    assert ^card1 = %Etudes9.Card{ honour: 2, suit: :spade}
+    assert ^card2 = %Etudes9.Card{ honour: 3, suit: :spade}
+  end
 
   test "round - same card drawn"
 

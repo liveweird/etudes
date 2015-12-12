@@ -62,6 +62,14 @@ defmodule Etudes9 do
     end
 
     @doc """
+      Create fake deck with selected cards
+    """
+    @spec create(list()) :: %Deck{}
+    def create(cards) do
+      %Deck{ cards: cards }
+    end
+
+    @doc """
       Shuffle the deck of cards
     """
     @spec shuffle(%Deck{}) :: %Deck{}
