@@ -156,7 +156,7 @@ defmodule Etudes9 do
           receive do
             {:drawn_card, drawn_card} ->
               # Logger.info "Collected card: #{inspect drawn_card}, current stack depth: #{inspect collected.cards|> Enum.count}."
-              collect(rest_players ++ [ player ], %Deck{ cards: [ drawn_card ] ++ collected.cards })
+              collect(rest_players ++ [ player ], %Deck{ cards: collected.cards ++ [ drawn_card ] })
             {:empty_hand} -> collect(rest_players, collected)
             after
               1_000 -> raise RuntimeError, "Player #{inspect player} not responding!"
@@ -176,15 +176,15 @@ defmodule Etudes9 do
       players
     end
 
-    @spec pick_one_card(list(), %{}) :: %{}
+    @spec pick_one_card(list(), list()) :: list()
     defp pick_one_card(players, cards) do
       case players do
         [ player | rest ] ->
           send(player, {:draw_card})
           receive do
             {:drawn_card, drawn_card} ->
-              # Logger.info "Collected card: #{inspect drawn_card}, current stack depth: #{inspect collected.cards|> Enum.count}."
-              new_cards = Map.put(cards, player, drawn_card)
+              # Logger.info "Collected card: #{inspect drawn_card}, current stack depth: #{inspect cards|> Enum.count}."
+              new_cards = cards ++ [ [ player: player, card: drawn_card ] ]
               pick_one_card(rest, new_cards)
             {:empty_hand} -> pick_one_card(rest, cards)
             after
@@ -194,13 +194,39 @@ defmodule Etudes9 do
       end
     end
 
-    @spec determine_round_winner(%{}) :: pid()
+    @spec determine_round_winner(list()) :: pid()
     defp determine_round_winner(cards) do
-      nil
+      case cards do
+        [ card | rest ] -> determine_round_winner_(rest, card)
+        [] -> raise RuntimeError, "Empty cards list!"
+      end
     end
 
-    @spec send_cards_back(pid(), %{}) :: none
+    @spec determine_round_winner_(list(), list()) :: pid()
+    defp determine_round_winner_(cards, winner) do
+      case cards do
+        [ card | rest ] ->
+          if card[:card].honour > winner[:card].honour do
+            determine_round_winner_(rest, card)
+          else
+            determine_round_winner_(rest, winner)
+          end
+        [] -> winner
+      end
+    end
+
+    @spec send_cards_back(pid(), %{}) :: pid()
     defp send_cards_back(round_winner, picked_cards) do
+      case picked_cards do
+        [ [ player: _, card: card ], rest ] ->
+          # Logger.info "Player: #{inspect round_winner[:player]}, card: #{inspect card}."
+          send(round_winner[:player], {:pick_card, card})
+          send_cards_back(round_winner, rest)
+        [ player: _, card: card ] ->
+          # Logger.info "Player: #{inspect round_winner[:player]}, card: #{inspect card}."
+          send(round_winner[:player], {:pick_card, card})
+      end
+      round_winner[:player]
     end
 
     @doc """

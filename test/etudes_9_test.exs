@@ -54,10 +54,10 @@ defmodule Etudes9Test do
     collected1 = Etudes9.Deck.collect([player1])
     collected2 = Etudes9.Deck.collect([player2])
     assert Enum.count(collected1.cards) == 0
-    card1 = elem(collected2.cards, 0)
-    card2 = elem(collected2.cards, 1)
-    assert ^card1 = %Etudes9.Card{ honour: 2, suit: :spade}
-    assert ^card2 = %Etudes9.Card{ honour: 3, suit: :spade}
+    assert Enum.count(collected2.cards) == 2
+    [ card1, card2 ] = collected2.cards
+    assert card1 == %Etudes9.Card{ honour: 2, suit: :spade}
+    assert card2 == %Etudes9.Card{ honour: 3, suit: :spade}
   end
 
   test "round - same card drawn"
