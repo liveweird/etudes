@@ -170,7 +170,37 @@ defmodule Etudes9 do
     """
     @spec play_round(list()) :: list()
     def play_round(players) do
+      picked_cards = pick_one_card(players, [])
+      round_winner = determine_round_winner(picked_cards)
+      send_cards_back(round_winner, picked_cards)
       players
+    end
+
+    @spec pick_one_card(list(), %{}) :: %{}
+    defp pick_one_card(players, cards) do
+      case players do
+        [ player | rest ] ->
+          send(player, {:draw_card})
+          receive do
+            {:drawn_card, drawn_card} ->
+              # Logger.info "Collected card: #{inspect drawn_card}, current stack depth: #{inspect collected.cards|> Enum.count}."
+              new_cards = Map.put(cards, player, drawn_card)
+              pick_one_card(rest, new_cards)
+            {:empty_hand} -> pick_one_card(rest, cards)
+            after
+              1_000 -> raise RuntimeError, "Player #{inspect player} not responding!"
+          end
+        [] -> cards
+      end
+    end
+
+    @spec determine_round_winner(%{}) :: pid()
+    defp determine_round_winner(cards) do
+      nil
+    end
+
+    @spec send_cards_back(pid(), %{}) :: none
+    defp send_cards_back(round_winner, picked_cards) do
     end
 
     @doc """
