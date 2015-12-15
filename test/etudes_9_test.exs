@@ -46,21 +46,43 @@ defmodule Etudes9Test do
   end
 
   test "round - clear winner" do
-    deck = Etudes9.Deck.create([ %Etudes9.Card{ honour: 2, suit: :spade}, %Etudes9.Card{ honour: 3, suit: :spade }])
+    deck = Etudes9.Deck.create([ %Etudes9.Card{ honour: 2, suit: :spade },
+                                 %Etudes9.Card{ honour: 3, suit: :spade },
+                                 %Etudes9.Card{ honour: 4, suit: :spade },
+                                 %Etudes9.Card{ honour: 5, suit: :spade }])
     player1 = Etudes9.create_player()
     player2 = Etudes9.create_player()
     Etudes9.Deck.deal(deck, [player1, player2])
     Etudes9.Deck.play_round([player1, player2])
     collected1 = Etudes9.Deck.collect([player1])
     collected2 = Etudes9.Deck.collect([player2])
-    assert Enum.count(collected1.cards) == 0
-    assert Enum.count(collected2.cards) == 2
-    [ card1, card2 ] = collected2.cards
-    assert card1 == %Etudes9.Card{ honour: 2, suit: :spade}
-    assert card2 == %Etudes9.Card{ honour: 3, suit: :spade}
+    assert Enum.count(collected1.cards) == 1
+    assert Enum.count(collected2.cards) == 3
+    [ card1, card2, card3 ] = collected2.cards
+    assert card1 == %Etudes9.Card{ honour: 5, suit: :spade}
+    assert card2 == %Etudes9.Card{ honour: 2, suit: :spade}
+    assert card3 == %Etudes9.Card{ honour: 3, suit: :spade}
   end
 
-  test "round - same card drawn"
+  test "round - same card drawn" do
+    deck = Etudes9.Deck.create([ %Etudes9.Card{ honour: 2, suit: :spade },
+                                 %Etudes9.Card{ honour: 2, suit: :diamond },
+                                 %Etudes9.Card{ honour: 5, suit: :spade },
+                                 %Etudes9.Card{ honour: 4, suit: :spade }])
+    player1 = Etudes9.create_player()
+    player2 = Etudes9.create_player()
+    Etudes9.Deck.deal(deck, [player1, player2])
+    Etudes9.Deck.play_round([player1, player2])
+    collected1 = Etudes9.Deck.collect([player1])
+    collected2 = Etudes9.Deck.collect([player2])
+    assert Enum.count(collected1.cards) == 4
+    assert Enum.count(collected2.cards) == 0
+    [ card1, card2, card3, card4 ] = collected2.cards
+    assert card1 == %Etudes9.Card{ honour: 5, suit: :spade}
+    assert card2 == %Etudes9.Card{ honour: 4, suit: :spade}
+    assert card3 == %Etudes9.Card{ honour: 2, suit: :spade}
+    assert card4 == %Etudes9.Card{ honour: 2, suit: :diamond}
+  end
 
   test "round - same card drawn twice"
 
