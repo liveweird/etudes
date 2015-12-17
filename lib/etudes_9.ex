@@ -168,11 +168,17 @@ defmodule Etudes9 do
     @doc """
       Draw cards, find out the winner & collect the bounty
     """
-    @spec play_round(list()) :: list()
-    def play_round(players) do
+    @spec play_round(list(), list() | none) :: list()
+    def play_round(players, on_table \\ []) do
       picked_cards = pick_one_card(players, [])
       round_winner = determine_round_winner(picked_cards)
-      send_cards_back(round_winner, picked_cards)
+
+      # Logger.info "Round winner: #{inspect round_winner}."
+      case round_winner do
+        [ winner ] -> send_cards_back(winner, on_table ++ picked_cards)
+        [ _ | _ ] -> play_round(players, on_table ++ picked_cards)
+      end
+
       players
     end
 
@@ -196,35 +202,37 @@ defmodule Etudes9 do
 
     @spec determine_round_winner(list()) :: pid()
     defp determine_round_winner(cards) do
+      # Logger.info "Determine winner for cards: #{inspect cards}."
       case cards do
-        [ card | rest ] -> determine_round_winner_(rest, card)
+        [ card | rest ] -> determine_round_winner_(rest, [ card ])
         [] -> raise RuntimeError, "Empty cards list!"
       end
     end
 
-    @spec determine_round_winner_(list(), list()) :: pid()
-    defp determine_round_winner_(cards, winner) do
+    @spec determine_round_winner_(list(), list()) :: list()
+    defp determine_round_winner_(cards, winners) do
+      winner = List.first(winners)
       case cards do
         [ card | rest ] ->
-          if card[:card].honour > winner[:card].honour do
-            determine_round_winner_(rest, card)
-          else
-            determine_round_winner_(rest, winner)
+          cond do
+             card[:card].honour > winner[:card].honour -> determine_round_winner_(rest, [ card ])
+             card[:card].honour < winner[:card].honour -> determine_round_winner_(rest, winners)
+             true -> determine_round_winner_(rest, winners ++ [ card ] )
           end
-        [] -> winner
+        [] ->
+          winners
       end
     end
 
     @spec send_cards_back(pid(), %{}) :: pid()
     defp send_cards_back(round_winner, picked_cards) do
       case picked_cards do
-        [ [ player: _, card: card ], rest ] ->
+        [ [ player: _, card: card ] | rest ] ->
           # Logger.info "Player: #{inspect round_winner[:player]}, card: #{inspect card}."
           send(round_winner[:player], {:pick_card, card})
           send_cards_back(round_winner, rest)
-        [ player: _, card: card ] ->
+        [ ] ->
           # Logger.info "Player: #{inspect round_winner[:player]}, card: #{inspect card}."
-          send(round_winner[:player], {:pick_card, card})
       end
       round_winner[:player]
     end

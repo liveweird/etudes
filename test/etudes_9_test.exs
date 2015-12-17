@@ -77,11 +77,12 @@ defmodule Etudes9Test do
     collected2 = Etudes9.Deck.collect([player2])
     assert Enum.count(collected1.cards) == 4
     assert Enum.count(collected2.cards) == 0
-    [ card1, card2, card3, card4 ] = collected2.cards
-    assert card1 == %Etudes9.Card{ honour: 5, suit: :spade}
-    assert card2 == %Etudes9.Card{ honour: 4, suit: :spade}
-    assert card3 == %Etudes9.Card{ honour: 2, suit: :spade}
-    assert card4 == %Etudes9.Card{ honour: 2, suit: :diamond}
+    # Logger.info "Collected cards: #{inspect collected1.cards}."
+    [ card1, card2, card3, card4 ] = collected1 .cards
+    assert card1 == %Etudes9.Card{ honour: 2, suit: :spade}
+    assert card2 == %Etudes9.Card{ honour: 2, suit: :diamond}
+    assert card3 == %Etudes9.Card{ honour: 5, suit: :spade}
+    assert card4 == %Etudes9.Card{ honour: 4, suit: :spade}
   end
 
   test "round - same card drawn twice"
