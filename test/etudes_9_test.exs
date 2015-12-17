@@ -85,7 +85,30 @@ defmodule Etudes9Test do
     assert card4 == %Etudes9.Card{ honour: 4, suit: :spade}
   end
 
-  test "round - same card drawn twice"
+  test "round - same card drawn twice" do
+    deck = Etudes9.Deck.create([ %Etudes9.Card{ honour: 2, suit: :spade },
+                                 %Etudes9.Card{ honour: 2, suit: :diamond },
+                                 %Etudes9.Card{ honour: 9, suit: :heart },
+                                 %Etudes9.Card{ honour: 9, suit: :club },
+                                 %Etudes9.Card{ honour: 7, suit: :spade },
+                                 %Etudes9.Card{ honour: 8, suit: :spade }])
+    player1 = Etudes9.create_player()
+    player2 = Etudes9.create_player()
+    Etudes9.Deck.deal(deck, [player1, player2])
+    Etudes9.Deck.play_round([player1, player2])
+    collected1 = Etudes9.Deck.collect([player1])
+    collected2 = Etudes9.Deck.collect([player2])
+    assert Enum.count(collected1.cards) == 0
+    assert Enum.count(collected2.cards) == 6
+    # Logger.info "Collected cards: #{inspect collected1.cards}."
+    [ card1, card2, card3, card4, card5, card6 ] = collected2.cards
+    assert card1 == %Etudes9.Card{ honour: 2, suit: :spade}
+    assert card2 == %Etudes9.Card{ honour: 2, suit: :diamond}
+    assert card3 == %Etudes9.Card{ honour: 9, suit: :heart}
+    assert card4 == %Etudes9.Card{ honour: 9, suit: :club}
+    assert card5 == %Etudes9.Card{ honour: 7, suit: :spade}
+    assert card6 == %Etudes9.Card{ honour: 8, suit: :spade}
+  end
 
   test "round - too few cards"
 
