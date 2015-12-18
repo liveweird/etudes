@@ -41,6 +41,12 @@ defmodule Etudes9 do
               []
           end
         player_loop(dealer, new_cards)
+      {:"hand_empty?"} ->
+        cond do
+          Enum.count(cards) > 0 -> send(dealer, {:hand_not_empty})
+          true -> send(dealer, {:hand_empty})
+        end
+        player_loop(dealer, cards)
       {:game_over} -> cards
     end
   end
@@ -240,9 +246,24 @@ defmodule Etudes9 do
     @doc """
       Check the victory conditions
     """
-    @spec check_victory_conditions(list()) :: integer()
-    def check_victory_conditions(players) do
-      -1
+    @spec check_victory_conditions(list(), list() | none) :: list()
+    def check_victory_conditions(players, remaining \\ []) do
+      case players do
+        [ player | rest ] ->
+          send(player, {:"hand_empty?"})
+          new_remaining =
+            receive do
+              {:hand_not_empty} ->
+                remaining ++ [ player ]
+              {:hand_empty} ->
+                # Logger.info "Player: #{inspect player} dropped off."
+                remaining
+              after
+                1_000 -> raise RuntimeError, "Player #{inspect player} not responding!"
+            end
+          check_victory_conditions(rest, new_remaining)
+        [] -> remaining
+      end
     end
   end
 end

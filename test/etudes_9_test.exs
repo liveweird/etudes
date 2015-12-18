@@ -157,6 +157,21 @@ defmodule Etudes9Test do
     assert card5 == %Etudes9.Card{ honour: 3, suit: :spade}
   end
 
-  test "round - victory conditions mets"
+  test "round - victory conditions mets" do
+    deck = Etudes9.Deck.create([ %Etudes9.Card{ honour: 2, suit: :spade },
+                                 %Etudes9.Card{ honour: 3, suit: :spade },
+                                 %Etudes9.Card{ honour: 4, suit: :spade },
+                                 %Etudes9.Card{ honour: 5, suit: :spade }])
+    player1 = Etudes9.create_player()
+    player2 = Etudes9.create_player()
+    players0 = [player1, player2]
+    Etudes9.Deck.deal(deck, players0)
+    Etudes9.Deck.play_round(players0)
+    players1 = Etudes9.Deck.check_victory_conditions(players0)
+    assert players1 == [player1,player2]
+    Etudes9.Deck.play_round(players1)
+    players2 = Etudes9.Deck.check_victory_conditions(players1)
+    assert players2 == [player2]
+  end
 
 end
