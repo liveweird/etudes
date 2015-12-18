@@ -133,6 +133,30 @@ defmodule Etudes9Test do
     assert card5 == %Etudes9.Card{ honour: 7, suit: :spade}
   end
 
+  test "basic 2-round scenario to find out proper deck rolling" do
+    deck = Etudes9.Deck.create([ %Etudes9.Card{ honour: 2, suit: :spade },
+                                 %Etudes9.Card{ honour: 3, suit: :spade },
+                                 %Etudes9.Card{ honour: 5, suit: :spade },
+                                 %Etudes9.Card{ honour: 5, suit: :club },
+                                 %Etudes9.Card{ honour: 7, suit: :club }])
+    player1 = Etudes9.create_player()
+    player2 = Etudes9.create_player()
+    Etudes9.Deck.deal(deck, [player1, player2])
+    Etudes9.Deck.play_round([player1, player2])
+    Etudes9.Deck.play_round([player1, player2])
+    collected1 = Etudes9.Deck.collect([player1])
+    collected2 = Etudes9.Deck.collect([player2])
+    assert Enum.count(collected1.cards) == 4
+    assert Enum.count(collected2.cards) == 1
+    [ card1, card2, card3, card4 ] = collected1.cards
+    assert card1 == %Etudes9.Card{ honour: 5, suit: :spade}
+    assert card2 == %Etudes9.Card{ honour: 5, suit: :club}
+    assert card3 == %Etudes9.Card{ honour: 7, suit: :club}
+    assert card4 == %Etudes9.Card{ honour: 2, suit: :spade}
+    [ card5 ] = collected2.cards
+    assert card5 == %Etudes9.Card{ honour: 3, suit: :spade}
+  end
+
   test "round - victory conditions mets"
 
 end
