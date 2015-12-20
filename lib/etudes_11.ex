@@ -27,8 +27,17 @@ defmodule Etudes11 do
       end_time_parsed = parse_time(end_time)
 
       phone_call = %PhoneCall{ start_date_time: { start_date_parsed, start_time_parsed }, end_date_time: { end_date_parsed, end_time_parsed }}
-      temp_calls = :ets.lookup(registry, number)
-      :ets.insert(registry, temp_calls ++ [ phone_call ])
+      cached = :ets.lookup(registry, number)
+      Logger.info "Read: |#{inspect cached}|."
+
+      result =
+        case cached do
+          [{^number, phone_calls}] ->
+            :ets.insert(registry, { number, phone_calls ++ [ phone_call ] })
+          [] -> :ets.insert(registry, { number, [ phone_call ] })
+        end
+
+      Logger.info "Result: |#{inspect result}|."
     end)
     registry
   end
@@ -36,7 +45,6 @@ defmodule Etudes11 do
   @spec parse_date(String.t()) :: tuple()
   defp parse_date(to_be_parsed) do
     matched = Regex.run(~r/^\s*(\d\d\d\d)-(\d\d)-(\d\d)\s*$/, to_be_parsed)
-    # Logger.info "Date to be parsed: |#{inspect matched}|."
     date_parsed =
       case matched do
         [ _, year, month, day ] -> { year, month, day }
