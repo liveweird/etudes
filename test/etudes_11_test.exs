@@ -7,7 +7,7 @@ defmodule Etudes11Test do
 
   test "Input file properly read" do
     registry = Etudes11.setup("./test/call_data.csv")
-    numbers = Etudes11.get_numbers
+    numbers = Etudes11.get_numbers(registry)
     assert Enum.count(numbers) == 7
   end
 
