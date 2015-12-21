@@ -28,7 +28,7 @@ defmodule Etudes11 do
 
       phone_call = %PhoneCall{ start_date_time: { start_date_parsed, start_time_parsed }, end_date_time: { end_date_parsed, end_time_parsed }}
       cached = :ets.lookup(registry, number)
-      Logger.info "Read: |#{inspect cached}|."
+      # Logger.info "Read: |#{inspect cached}|."
 
       result =
         case cached do
@@ -37,7 +37,7 @@ defmodule Etudes11 do
           [] -> :ets.insert(registry, { number, [ phone_call ] })
         end
 
-      Logger.info "Result: |#{inspect result}|."
+      # Logger.info "Result: |#{inspect result}|."
     end)
     registry
   end
@@ -69,7 +69,19 @@ defmodule Etudes11 do
   """
   @spec get_numbers(pid()) :: list()
   def get_numbers(registry) do
-    -1
+    numbers = :ets.foldl(fn ({ number, _ }, acc) ->
+      [ number ] ++ acc
+    end, [], registry)
+    # Logger.info "Numbers: |#{inspect numbers}|."
+    numbers
+  end
+
+  @doc """
+    Get calls for particular number
+  """
+  @spec get_calls(pid(), String.t()) :: list()
+  def get_calls(registry, number) do
+    :ets.lookup(registry, number) 
   end
 
 end
