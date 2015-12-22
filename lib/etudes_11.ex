@@ -81,7 +81,23 @@ defmodule Etudes11 do
   """
   @spec get_calls(pid(), String.t()) :: list()
   def get_calls(registry, number) do
-    :ets.lookup(registry, number) 
+    :ets.lookup(registry, number)
+  end
+
+  @doc """
+    Summary of calls length for particular number
+  """
+  @spec summary(String.t()) :: list()
+  def summary(number) do
+    []
+  end
+
+  @doc """
+    Summary of calls length for all numbers
+  """
+  @spec summary() :: list()
+  def summary() do
+    []
   end
 
 end

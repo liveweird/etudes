@@ -32,4 +32,18 @@ defmodule Etudes11Test do
             %Etudes11.PhoneCall{end_date_time: {{"2013", "03", "10"}, {"09", "09", "32"}}, start_date_time: {{"2013", "03", "10"}, {"09", "06", "15"}}}] == calls2
   end
 
+  test "Summary for non-existent number" do
+    registry = Etudes11.setup("./test/call_data.csv")
+    numbers = Etudes11.summary("111-222-3333")
+    assert [{"111-222-3333", 0}] == numbers
+  end
+
+  test "Summary for existing number" do
+    registry = Etudes11.setup("./test/call_data.csv")
+    numbers = Etudes11.summary("415-555-7871")
+    assert [{"415-555-7871", 6}] == numbers
+  end
+
+  test "Summary for all the numbers"
+
 end
