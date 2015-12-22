@@ -44,6 +44,12 @@ defmodule Etudes11Test do
     assert [{"415-555-7871", 6}] == numbers
   end
 
-  test "Summary for all the numbers"
+  test "Summary for all the numbers" do
+    registry = Etudes11.setup("./test/call_data.csv")
+    numbers = Etudes11.summary(registry)
+    assert [{"729-555-8855", 5}, {"650-555-3326", 9}, {"838-555-1099", 7},
+            {"415-555-7871", 6}, {"213-555-0172", 8}, {"946-555-9760", 2},
+            {"301-555-0433", 9}] == numbers
+  end
 
 end

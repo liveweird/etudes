@@ -117,7 +117,12 @@ defmodule Etudes11 do
   """
   @spec summary(pid()) :: list()
   def summary(registry) do
-    []
+    numbers = :ets.foldl(fn ({ number, _ }, acc) ->
+      partial = summary(registry, number)
+      acc ++ partial
+    end, [], registry)
+    Logger.info "Numbers: |#{inspect numbers}|."
+    numbers
   end
 
 end
