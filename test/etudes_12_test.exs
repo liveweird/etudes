@@ -11,8 +11,11 @@ defmodule Etudes12Test do
   end
 
   test "Get weather info for existing location", %{history: history} do
-    info = GenServer.call(history, {"KSJC"})
-    Logger.info "Info: |#{inspect info}|."
+    temp_c = GenServer.call(history, {"KSJC"})
+    # Logger.info "Response: |#{inspect temp_c}|."
+    assert tuple_size(temp_c) == 2
+    assert elem(temp_c, 0) == "temp_c"
+    assert {:error} != Float.parse(elem(temp_c,1))
   end
 
   test "Try to get weather for non-existent location"

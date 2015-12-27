@@ -18,6 +18,14 @@ defmodule Etudes12 do
       {:ok, HashSet.new}
     end
 
+    defp get_content(xml, element_name) do
+      result = Regex.run(~r/<temp_c>([^<]+)<\/temp_c>/, xml |> to_string)
+      case result do
+        [_all, match] -> {element_name, match}
+        nil -> {element_name, nil}
+      end
+    end
+
     def handle_call({code}, from, state) do
       # add code to history
       updated_state =
@@ -29,12 +37,11 @@ defmodule Etudes12 do
 
       # get info
       url = "http://w1.weather.gov/xml/current_obs/" <> code <> ".xml"
-      Logger.info "URL: |#{inspect url}|."
-      info = :httpc.request(:get, {url |> String.to_char_list, []}, [], [])
-      Logger.info "Info: |#{inspect info}|."
+      {:ok, {_, _, content}} = :httpc.request(:get, {url |> String.to_char_list, [{'User-Agent', 'Mozilla/5.0'}]}, [], [])
+      temp_c = content |> get_content("temp_c")
 
       # return
-      {:reply, info, updated_state}
+      {:reply, temp_c, updated_state}
     end
 
     def handle_cast({""}, state) do
