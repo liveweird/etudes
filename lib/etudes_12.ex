@@ -33,7 +33,6 @@ defmodule Etudes12 do
           HashSet.member?(state, code) -> state
           true -> HashSet.put(state, code)
         end
-      Logger.info "State: |#{inspect updated_state}|."
 
       # get info
       url = "http://w1.weather.gov/xml/current_obs/" <> code <> ".xml"
@@ -45,7 +44,13 @@ defmodule Etudes12 do
     end
 
     def handle_cast({""}, state) do
+      IO.puts "inspect #{state}"
       {:noreply, state}
+    end
+
+    def terminate(reason, state) do
+      :inets.stop()
+      :ok
     end
 
   end

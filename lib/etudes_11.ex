@@ -121,7 +121,7 @@ defmodule Etudes11 do
       partial = summary(registry, number)
       acc ++ partial
     end, [], registry)
-    Logger.info "Numbers: |#{inspect numbers}|."
+    # Logger.info "Numbers: |#{inspect numbers}|."
     numbers
   end
 

@@ -20,7 +20,6 @@ defmodule Etudes11Test do
 
   test "All phone calls for particular phone numbers present" do
     registry = Etudes11.setup("./test/call_data.csv")
-    numbers = Etudes11.get_numbers(registry)
     [{_, calls1}] = Etudes11.get_calls(registry, "213-555-0172")
     # Logger.info "Calls: |#{inspect calls1}|."
     assert [%Etudes11.PhoneCall{end_date_time: {{2013, 03, 10}, {09, 03, 49}}, start_date_time: {{2013, 03, 10}, {09, 00, 59}}},
