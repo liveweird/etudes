@@ -6,14 +6,43 @@ defmodule Etudes12 do
   require Logger
   require IEx
 
+  def ask_weather(code) do
+    GenServer.call(Etudes12.Weather, code)
+  end
+
+  def ask_history do
+    GenServer.cast(Etudes12.Weather, {""})
+  end
+
+  defmodule WeatherSupervisor do
+    use Supervisor
+
+    def start_link do
+      Supervisor.start_link(__MODULE__, [], [{:name, __MODULE__}])
+    end
+
+    def init([]) do
+      children = [
+        worker(Etudes12.Weather, [], [])
+      ]
+      supervise(children, [
+        {:strategy, :one_for_one},
+        {:max_restarts, 1},
+        {:max_seconds, 5}
+      ])
+    end
+
+  end
+
   defmodule Weather do
     use GenServer
 
-    def start_link(opts \\ []) do
-      GenServer.start_link(__MODULE__, :ok, opts)
+    def start_link do
+      GenServer.start_link(__MODULE__, :ok, [{:name, __MODULE__}])
     end
 
     def init(:ok) do
+      Logger.info "Initializing GenServer."
       :ok = :inets.start()
       {:ok, HashSet.new}
     end
@@ -43,12 +72,18 @@ defmodule Etudes12 do
       {:reply, temp_c, updated_state}
     end
 
+    def handle_call(:stop, from, state) do
+      Logger.info "Received stop command."
+      {:stop, :normal, state}
+    end
+
     def handle_cast({""}, state) do
       IO.puts "inspect #{state}"
       {:noreply, state}
     end
 
     def terminate(reason, state) do
+      Logger.info "Terminating GenServer."
       :inets.stop()
       :ok
     end
