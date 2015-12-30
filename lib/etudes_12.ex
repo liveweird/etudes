@@ -11,7 +11,8 @@ defmodule Etudes12 do
   end
 
   def ask_history do
-    GenServer.cast(Etudes12.Weather, {""})
+    GenServer.call(Etudes12.Weather, {""})
+    |> Enum.each(&(IO.puts &1))
   end
 
   defmodule WeatherSupervisor do
@@ -55,6 +56,13 @@ defmodule Etudes12 do
       end
     end
 
+    def handle_call({""}, from, state) do
+      output =
+        state
+        |> Set.to_list
+      {:reply, output, state}
+    end
+
     def handle_call({code}, from, state) do
       # add code to history
       updated_state =
@@ -75,13 +83,6 @@ defmodule Etudes12 do
     def handle_call(:stop, from, state) do
       Logger.info "Received stop command."
       {:stop, :normal, state}
-    end
-
-    def handle_cast({""}, state) do
-      state
-      |> Set.to_list
-      |> Enum.each(&(IO.puts &1))
-      {:noreply, state}
     end
 
     def terminate(reason, state) do
