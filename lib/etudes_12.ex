@@ -78,7 +78,9 @@ defmodule Etudes12 do
     end
 
     def handle_cast({""}, state) do
-      IO.puts "inspect #{state}"
+      state
+      |> Set.to_list
+      |> Enum.each(&(IO.puts &1))
       {:noreply, state}
     end
 
