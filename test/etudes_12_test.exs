@@ -14,6 +14,7 @@ defmodule Etudes12Test do
     assert tuple_size(temp_c) == 2
     assert elem(temp_c, 0) == "temp_c"
     assert {:error} != Float.parse(elem(temp_c,1))
+    Etudes12.WeatherSupervisor.tidy_up
     Process.unlink(visor)
     Process.exit(visor, :kill)
   end
@@ -25,6 +26,7 @@ defmodule Etudes12Test do
     assert tuple_size(temp_c) == 2
     assert elem(temp_c, 0) == "temp_c"
     assert elem(temp_c, 1) == nil
+    Etudes12.WeatherSupervisor.tidy_up
     Process.unlink(visor)
     Process.exit(visor, :kill)
   end
@@ -36,6 +38,7 @@ defmodule Etudes12Test do
       Etudes12.ask_weather({"KITH"})
       Etudes12.ask_history()
     end) == "KITH\nKSJC\n"
+    Etudes12.WeatherSupervisor.tidy_up
     Process.unlink(visor)
     Process.exit(visor, :kill)
   end

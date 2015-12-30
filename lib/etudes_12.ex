@@ -23,6 +23,7 @@ defmodule Etudes12 do
     end
 
     def init([]) do
+      :ok = :inets.start()
       children = [
         worker(Etudes12.Weather, [], [])
       ]
@@ -31,6 +32,10 @@ defmodule Etudes12 do
         {:max_restarts, 1},
         {:max_seconds, 5}
       ])
+    end
+
+    def tidy_up do
+      :inets.stop()
     end
 
   end
@@ -43,8 +48,7 @@ defmodule Etudes12 do
     end
 
     def init(:ok) do
-      Logger.info "Initializing GenServer."
-      :ok = :inets.start()
+      # Logger.info "Initializing GenServer."
       {:ok, HashSet.new}
     end
 
@@ -81,13 +85,12 @@ defmodule Etudes12 do
     end
 
     def handle_call(:stop, from, state) do
-      Logger.info "Received stop command."
+      # Logger.info "Received stop command."
       {:stop, :normal, state}
     end
 
     def terminate(reason, state) do
-      Logger.info "Terminating GenServer."
-      :inets.stop()
+      # Logger.info "Terminating GenServer."
       :ok
     end
 
