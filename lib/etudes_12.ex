@@ -7,11 +7,11 @@ defmodule Etudes12 do
   require IEx
 
   def ask_weather(code) do
-    GenServer.call(Etudes12.Weather, code)
+    GenServer.call({:global, Etudes12.Weather}, code)
   end
 
   def ask_history do
-    GenServer.call(Etudes12.Weather, {""})
+    GenServer.call({:global, Etudes12.Weather}, {""})
     |> Enum.each(&(IO.puts &1))
   end
 
@@ -19,7 +19,7 @@ defmodule Etudes12 do
     use Supervisor
 
     def start_link do
-      Supervisor.start_link(__MODULE__, [], [{:name, __MODULE__}])
+      Supervisor.start_link(__MODULE__, [], [{:name, {:global, __MODULE__}}])
     end
 
     def init([]) do
@@ -44,7 +44,7 @@ defmodule Etudes12 do
     use GenServer
 
     def start_link do
-      GenServer.start_link(__MODULE__, :ok, [{:name, __MODULE__}])
+      GenServer.start_link(__MODULE__, :ok, [{:name, {:global, __MODULE__}}])
     end
 
     def init(:ok) do
