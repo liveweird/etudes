@@ -43,4 +43,45 @@ defmodule Etudes12Test do
     Process.exit(visor, :kill)
   end
 
+  test "Client logs in" do
+    {:ok, room} = Etudes12.Chatroom.start_link("room1")
+    Person.start_link(room)
+    Person.login("Steve")
+  end
+
+  test "Client logs in twice"
+
+  test "Client with the same name tries to log in"
+
+  test "Non-logged client tries to log out"
+
+  test "Logged out client tries to log out"
+
+  test "Client logs out" do
+    {:ok, room} = Etudes12.Chatroom.start_link("room1")
+    Person.start_link(room)
+    Person.login("Steve")
+    Person.logout
+  end
+
+  test "Set profile property"
+
+  test "Set property twice"
+
+  test "Person says something"
+
+  test "Person tries to say something while not logged in"
+
+  test "Person tries to say something after logging out"
+
+  test "Get empty list of logged users"
+
+  test "Get non-empty list of logged users"
+
+  test "Inspecting a person"
+
+  test "Inspecting a person with a changed profile"
+
+  test "Inspecting a non-existent person"
+
 end

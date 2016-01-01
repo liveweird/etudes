@@ -99,6 +99,10 @@ defmodule Etudes12 do
   defmodule Chatroom do
     use GenServer
 
+    def start_link(name) do
+      GenServer.start_link(__MODULE__, :ok, [{:name, {:global, name}}])
+    end
+
     def init(:ok) do
     end
 
@@ -122,6 +126,10 @@ defmodule Etudes12 do
   defmodule Person do
     use GenServer
 
+    def start_link do
+      GenServer.start_link(__MODULE__, :ok, [{:name, {:global, name}}])
+    end
+
     def init(:ok) do
     end
 
@@ -141,6 +149,27 @@ defmodule Etudes12 do
     end
 
     def handle_call({:set_profile, key, value}, from, state) do
+    end
+
+    def get_chat_node() do
+    end
+
+    def login(user_name) do
+    end
+
+    def logout() do
+    end
+
+    def say(text) do
+    end
+
+    def users() do
+    end
+
+    def who(user_name, user_node) do
+    end
+
+    def set_profile(key, value) do
     end
 
   end
