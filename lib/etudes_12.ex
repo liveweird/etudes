@@ -96,4 +96,53 @@ defmodule Etudes12 do
 
   end
 
+  defmodule Chatroom do
+    use GenServer
+
+    def init(:ok) do
+    end
+
+    def handle_call({:login, user_name, server_name}, from, state) do
+    end
+
+    def handle_call(:logout, from, state) do
+    end
+
+    def handle_call({:say, text}, from, state) do
+    end
+
+    def handle_call(:users, from, state) do
+    end
+
+    def handle_call({:profile, person, server_name}, from, state) do
+    end
+
+  end
+
+  defmodule Person do
+    use GenServer
+
+    def init(:ok) do
+    end
+
+    def handle_call(:get_chat_node, from, state) do
+    end
+
+    def handle_call({:login, user_name}, from, state) do
+    end
+
+    def handle_call(:logout, from, state) do
+    end
+
+    def handle_call({:say, text}, from, state) do
+    end
+
+    def handle_call(:get_profile, from, state) do
+    end
+
+    def handle_call({:set_profile, key, value}, from, state) do
+    end
+
+  end
+
 end
