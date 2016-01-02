@@ -111,7 +111,7 @@ defmodule Etudes12 do
       found = List.keyfind(state, {user_name, server_name}, 0)
       case found do
         nil -> {:reply, :ok, [{{user_name, server_name}, pid}] ++ state}
-        {{^user_name, ^server_name}, _} -> raise ArgumentError, "User already logged in"
+        {{^user_name, ^server_name}, _} -> {:reply, {:error, "User already logged in"}, state}
       end
     end
 
@@ -149,8 +149,8 @@ defmodule Etudes12 do
     end
 
     def handle_call({:login, user_name}, from, state) do
-      :ok = GenServer.call(Etudes12.Chatroom, {:login, user_name, state[:chatroom]})
-      {:reply, :ok, state}
+      response = GenServer.call(Etudes12.Chatroom, {:login, user_name, state[:chatroom]})
+      {:reply, response, state}
     end
 
     def handle_call(:logout, from, state) do
@@ -169,7 +169,7 @@ defmodule Etudes12 do
     end
 
     def login(user_name) do
-      :ok = GenServer.call(Etudes12.Person, {:login, user_name})
+      GenServer.call(Etudes12.Person, {:login, user_name})
     end
 
     def logout() do
