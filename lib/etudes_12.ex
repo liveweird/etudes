@@ -168,8 +168,8 @@ defmodule Etudes12 do
     def get_chat_node() do
     end
 
-    def login(user_name) do
-      GenServer.call(Etudes12.Person, {:login, user_name})
+    def login(person, user_name) do
+      GenServer.call(person, {:login, user_name})
     end
 
     def logout() do

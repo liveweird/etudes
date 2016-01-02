@@ -46,19 +46,26 @@ defmodule Etudes12Test do
   test "Client logs in" do
     {:ok, room} = Etudes12.Chatroom.start_link
     {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login("Steve")
+    assert :ok == Etudes12.Person.login(person, "Steve")
     assert [{{"Steve", room}, person}] == Etudes12.Chatroom.users
   end
 
   test "Client logs in twice" do
     {:ok, room} = Etudes12.Chatroom.start_link
     {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login("Steve")
-    assert {:error, "User already logged in"} == Etudes12.Person.login("Steve")
+    assert :ok == Etudes12.Person.login(person, "Steve")
+    assert {:error, "User already logged in"} == Etudes12.Person.login(person, "Steve")
     assert [{{"Steve", room}, person}] == Etudes12.Chatroom.users
   end
 
-  test "Client with the same name tries to log in"
+  test "Client with the same name tries to log in" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person1} = Etudes12.Person.start_link(room)
+    {:ok, person2} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person1, "Steve")
+    assert {:error, "User already logged in"} == Etudes12.Person.login(person2, "Steve")
+    assert [{{"Steve", room}, person1}] == Etudes12.Chatroom.users
+  end
 
   test "Non-logged client tries to log out"
 
