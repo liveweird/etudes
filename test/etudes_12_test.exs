@@ -44,9 +44,10 @@ defmodule Etudes12Test do
   end
 
   test "Client logs in" do
-    {:ok, room} = Etudes12.Chatroom.start_link("room1")
-    Person.start_link(room)
-    Person.login("Steve")
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    Etudes12.Person.login("Steve")
+    assert [{{"Steve", room}, person}] == Etudes12.Chatroom.users
   end
 
   test "Client logs in twice"

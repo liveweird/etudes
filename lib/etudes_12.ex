@@ -99,14 +99,20 @@ defmodule Etudes12 do
   defmodule Chatroom do
     use GenServer
 
-    def start_link(name) do
-      GenServer.start_link(__MODULE__, :ok, [{:name, {:global, name}}])
+    def start_link do
+      GenServer.start_link(__MODULE__, :ok, [{:name, __MODULE__}])
     end
 
     def init(:ok) do
+      {:ok, []}
     end
 
-    def handle_call({:login, user_name, server_name}, from, state) do
+    def handle_call({:login, user_name, server_name}, {pid, reference}, state) do
+      found = List.keyfind(state, {user_name, server_name}, 0)
+      case found do
+        nil -> {:reply, :ok, [{{user_name, server_name}, pid}] ++ state}
+        {{^user_name, ^server_name}, _} -> raise ArgumentError, "User already logged in"
+      end
     end
 
     def handle_call(:logout, from, state) do
@@ -116,9 +122,14 @@ defmodule Etudes12 do
     end
 
     def handle_call(:users, from, state) do
+      {:reply, state, state}
     end
 
     def handle_call({:profile, person, server_name}, from, state) do
+    end
+
+    def users() do
+      GenServer.call(Etudes12.Chatroom, :users)
     end
 
   end
@@ -126,17 +137,20 @@ defmodule Etudes12 do
   defmodule Person do
     use GenServer
 
-    def start_link do
-      GenServer.start_link(__MODULE__, :ok, [{:name, {:global, name}}])
+    def start_link(chatroom) do
+      GenServer.start_link(__MODULE__, chatroom, [{:name, __MODULE__}])
     end
 
-    def init(:ok) do
+    def init(chatroom) do
+      {:ok, %{:chatroom => chatroom, :props => %{}}}
     end
 
     def handle_call(:get_chat_node, from, state) do
     end
 
     def handle_call({:login, user_name}, from, state) do
+      :ok = GenServer.call(Etudes12.Chatroom, {:login, user_name, state[:chatroom]})
+      {:reply, :ok, state}
     end
 
     def handle_call(:logout, from, state) do
@@ -155,15 +169,13 @@ defmodule Etudes12 do
     end
 
     def login(user_name) do
+      :ok = GenServer.call(Etudes12.Person, {:login, user_name})
     end
 
     def logout() do
     end
 
     def say(text) do
-    end
-
-    def users() do
     end
 
     def who(user_name, user_node) do
