@@ -115,7 +115,12 @@ defmodule Etudes12 do
       end
     end
 
-    def handle_call(:logout, from, state) do
+    def handle_call(:logout, {pid, reference}, state) do
+      found = List.keyfind(state, pid, 1)
+      case found do
+        nil -> {:reply, {:error, "User not logged in"}, state}
+        {{_, _}, pid} -> {:reply, :ok, List.delete(state, found)}
+      end
     end
 
     def handle_call({:say, text}, from, state) do
@@ -138,7 +143,7 @@ defmodule Etudes12 do
     use GenServer
 
     def start_link(chatroom) do
-      GenServer.start_link(__MODULE__, chatroom, [{:name, __MODULE__}])
+      GenServer.start_link(__MODULE__, chatroom, [])
     end
 
     def init(chatroom) do
@@ -154,6 +159,8 @@ defmodule Etudes12 do
     end
 
     def handle_call(:logout, from, state) do
+      response = GenServer.call(Etudes12.Chatroom, :logout)
+      {:reply, response, state}
     end
 
     def handle_call({:say, text}, from, state) do
@@ -172,7 +179,8 @@ defmodule Etudes12 do
       GenServer.call(person, {:login, user_name})
     end
 
-    def logout() do
+    def logout(person) do
+      GenServer.call(person, :logout)
     end
 
     def say(text) do

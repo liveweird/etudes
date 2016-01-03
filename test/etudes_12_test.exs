@@ -67,15 +67,30 @@ defmodule Etudes12Test do
     assert [{{"Steve", room}, person1}] == Etudes12.Chatroom.users
   end
 
-  test "Non-logged client tries to log out"
+  test "Non-logged client tries to log out" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert {:error, "User not logged in"} == Etudes12.Person.logout(person)
+    assert [] == Etudes12.Chatroom.users
+  end
 
-  test "Logged out client tries to log out"
+  test "Logged out client tries to log out" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person, "Steve")
+    assert :ok == Etudes12.Person.logout(person)
+    assert [] == Etudes12.Chatroom.users
+    assert {:error, "User not logged in"} == Etudes12.Person.logout(person)
+    assert [] == Etudes12.Chatroom.users
+  end
 
   test "Client logs out" do
-    {:ok, room} = Etudes12.Chatroom.start_link("room1")
-    Person.start_link(room)
-    Person.login("Steve")
-    Person.logout
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person, "Steve")
+    assert [{{"Steve", room}, person}] == Etudes12.Chatroom.users
+    assert :ok == Etudes12.Person.logout(person)
+    assert [] == Etudes12.Chatroom.users
   end
 
   test "Set profile property"
