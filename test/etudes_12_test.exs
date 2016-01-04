@@ -43,6 +43,12 @@ defmodule Etudes12Test do
     Process.exit(visor, :kill)
   end
 
+  test "Get empty list of logged users" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert [] == Etudes12.Chatroom.users
+  end
+
   test "Client logs in" do
     {:ok, room} = Etudes12.Chatroom.start_link
     {:ok, person} = Etudes12.Person.start_link(room)
@@ -93,7 +99,13 @@ defmodule Etudes12Test do
     assert [] == Etudes12.Chatroom.users
   end
 
-  test "Set profile property"
+  test "Set profile property" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person, "Steve")
+    Etudes12.Person.set_profile(person, "ABC","DEF")
+    assert %{"ABC" => "DEF"} == Etudes12.Chatroom.who("Steve", room)
+  end
 
   test "Set property twice"
 
@@ -102,10 +114,6 @@ defmodule Etudes12Test do
   test "Person tries to say something while not logged in"
 
   test "Person tries to say something after logging out"
-
-  test "Get empty list of logged users"
-
-  test "Get non-empty list of logged users"
 
   test "Inspecting a person"
 

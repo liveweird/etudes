@@ -130,11 +130,22 @@ defmodule Etudes12 do
       {:reply, state, state}
     end
 
-    def handle_call({:profile, person, server_name}, from, state) do
+    def handle_call({:profile, user_name, server_name}, from, state) do
+      found = List.keyfind(state, {user_name, server_name}, 0)
+      case found do
+        nil -> {:reply, {:error, "Unknown user"}, state}
+        {{^user_name, ^server_name}, pid} ->
+          profile = GenServer.call(pid, :get_profile)
+          {:reply, profile, state}
+      end
     end
 
     def users() do
       GenServer.call(Etudes12.Chatroom, :users)
+    end
+
+    def who(user_name, user_node) do
+      GenServer.call(Etudes12.Chatroom, {:profile, user_name, user_node})
     end
 
   end
@@ -167,9 +178,12 @@ defmodule Etudes12 do
     end
 
     def handle_call(:get_profile, from, state) do
+      {:reply, state[:props], state}
     end
 
     def handle_call({:set_profile, key, value}, from, state) do
+      props = Map.put(state[:props], key, value)
+      {:reply, :ok, %{:chatroom => state[:chatroom], :props => props}}
     end
 
     def get_chat_node() do
@@ -186,10 +200,8 @@ defmodule Etudes12 do
     def say(text) do
     end
 
-    def who(user_name, user_node) do
-    end
-
-    def set_profile(key, value) do
+    def set_profile(person, key, value) do
+      GenServer.call(person, {:set_profile, key, value})
     end
 
   end
