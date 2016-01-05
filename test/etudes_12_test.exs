@@ -45,7 +45,7 @@ defmodule Etudes12Test do
 
   test "Get empty list of logged users" do
     {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
+    {:ok, _} = Etudes12.Person.start_link(room)
     assert [] == Etudes12.Chatroom.users
   end
 
@@ -107,18 +107,39 @@ defmodule Etudes12Test do
     assert %{"ABC" => "DEF"} == Etudes12.Chatroom.who("Steve", room)
   end
 
-  test "Set property twice"
+  test "Set property twice" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person, "Steve")
+    Etudes12.Person.set_profile(person, "ABC","DEF")
+    Etudes12.Person.set_profile(person, "ABC","GHI")
+    assert %{"ABC" => "GHI"} == Etudes12.Chatroom.who("Steve", room)
+  end
+
+  test "Inspecting a person" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person, "Steve")
+    assert %{} == Etudes12.Chatroom.who("Steve", room)
+  end
+
+  test "Inspecting a non-logged person" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, _} = Etudes12.Person.start_link(room)
+    assert {:error, "Unknown user"} == Etudes12.Chatroom.who("Steve", room)
+  end
+
+  test "Inspecting a non-existent person" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person, "Steve")
+    assert {:error, "Unknown user"} == Etudes12.Chatroom.who("Stevo", room)
+  end
 
   test "Person says something"
 
   test "Person tries to say something while not logged in"
 
   test "Person tries to say something after logging out"
-
-  test "Inspecting a person"
-
-  test "Inspecting a person with a changed profile"
-
-  test "Inspecting a non-existent person"
 
 end
