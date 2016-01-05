@@ -136,7 +136,15 @@ defmodule Etudes12Test do
     assert {:error, "Unknown user"} == Etudes12.Chatroom.who("Stevo", room)
   end
 
-  test "Person says something"
+  test "Person says something" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person1} = Etudes12.Person.start_link(room)
+    {:ok, person2} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person1, "Steve")
+    assert :ok == Etudes12.Person.login(person2, "Benji")
+    Etudes12.Person.say(person1, "Somethin'")
+    # Gotta handle what person2's receivin' ...
+  end
 
   test "Person tries to say something while not logged in"
 
