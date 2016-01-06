@@ -158,11 +158,12 @@ defmodule Etudes12 do
     end
 
     def init(chatroom) do
-      {:ok, %{:chatroom => chatroom, :props => %{}}}
+      {:ok, %{:chatroom => chatroom, :props => %{}, :history => []}}
     end
 
-    def handle_call(:get_chat_node, from, state) do
-    end
+    # def handle_call(:get_chat_node, from, state) do
+    #   {:reply, state[:chatroom], state}
+    # end
 
     def handle_call({:login, user_name}, from, state) do
       response = GenServer.call(Etudes12.Chatroom, {:login, user_name, state[:chatroom]})
@@ -175,6 +176,11 @@ defmodule Etudes12 do
     end
 
     def handle_call({:say, text}, from, state) do
+      state
+    end
+
+    def handle_call({:message, {from_user, from_server}, text}, from, state) do
+      state
     end
 
     def handle_call(:get_profile, from, state) do
@@ -183,11 +189,16 @@ defmodule Etudes12 do
 
     def handle_call({:set_profile, key, value}, from, state) do
       props = Map.put(state[:props], key, value)
-      {:reply, :ok, %{:chatroom => state[:chatroom], :props => props}}
+      {:reply, :ok, %{:chatroom => state[:chatroom], :props => props, :history => state[:history]}}
     end
 
-    def get_chat_node() do
+    def handle_call(:get_history, from, state) do
+      {:reply, state[:history], state}
     end
+
+    # def get_chat_node() do
+    #   GenServer.call(person, :get_chat_node)
+    # end
 
     def login(person, user_name) do
       GenServer.call(person, {:login, user_name})
@@ -202,6 +213,10 @@ defmodule Etudes12 do
 
     def set_profile(person, key, value) do
       GenServer.call(person, {:set_profile, key, value})
+    end
+
+    def get_history(person) do
+      GenServer.call(person, :get_history)
     end
 
   end

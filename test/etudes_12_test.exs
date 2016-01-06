@@ -136,14 +136,35 @@ defmodule Etudes12Test do
     assert {:error, "Unknown user"} == Etudes12.Chatroom.who("Stevo", room)
   end
 
-  test "Person says something" do
+  test "Person says something to himself" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person1} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person1, "Steve")
+    Etudes12.Person.say(person1, "Somethin'")
+    assert [{{person1, room}, "Somethin'"}] == Etudes12.Person.get_history(person1)
+  end
+
+  test "Person says something (in company)" do
     {:ok, room} = Etudes12.Chatroom.start_link
     {:ok, person1} = Etudes12.Person.start_link(room)
     {:ok, person2} = Etudes12.Person.start_link(room)
     assert :ok == Etudes12.Person.login(person1, "Steve")
     assert :ok == Etudes12.Person.login(person2, "Benji")
     Etudes12.Person.say(person1, "Somethin'")
-    # Gotta handle what person2's receivin' ...
+    assert [{{person1, room}, "Somethin'"}] == Etudes12.Person.get_history(person1)
+    assert [{{person1, room}, "Somethin'"}] == Etudes12.Person.get_history(person2)
+  end
+
+  test "Messages come in sequence" do
+    {:ok, room} = Etudes12.Chatroom.start_link
+    {:ok, person1} = Etudes12.Person.start_link(room)
+    {:ok, person2} = Etudes12.Person.start_link(room)
+    assert :ok == Etudes12.Person.login(person1, "Steve")
+    assert :ok == Etudes12.Person.login(person2, "Benji")
+    Etudes12.Person.say(person2, "Somethin'")
+    Etudes12.Person.say(person1, "... different")
+    assert [{{person2, room}, "Somethin'"}, {{person1, room}, "... different"}] == Etudes12.Person.get_history(person1)
+    assert [{{person2, room}, "Somethin'"}, {{person1, room}, "... different"}] == Etudes12.Person.get_history(person2)
   end
 
   test "Person tries to say something while not logged in"
