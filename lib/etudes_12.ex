@@ -123,7 +123,8 @@ defmodule Etudes12 do
       end
     end
 
-    def handle_call({:say, text}, from, state) do
+    def handle_cast({:say, text}, state) do
+      {:noreply, state}
     end
 
     def handle_call(:users, from, state) do
@@ -175,8 +176,10 @@ defmodule Etudes12 do
       {:reply, response, state}
     end
 
-    def handle_call({:say, text}, from, state) do
-      state
+    def handle_cast({:say, text}, state) do
+      history = [{{self(), state[:chatroom]}, text}] ++ state[:history]
+      GenServer.cast(Etudes12.Chatroom, {:say, text})
+      {:noreply, %{:chatroom => state[:chatroom], :props => state[:props], :history => history}}
     end
 
     def handle_call({:message, {from_user, from_server}, text}, from, state) do
@@ -208,7 +211,8 @@ defmodule Etudes12 do
       GenServer.call(person, :logout)
     end
 
-    def say(text) do
+    def say(person, text) do
+      GenServer.cast(person, {:say, text})
     end
 
     def set_profile(person, key, value) do
