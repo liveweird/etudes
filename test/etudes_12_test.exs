@@ -44,127 +44,127 @@ defmodule Etudes12Test do
   end
 
   test "Get empty list of logged users" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, _} = Etudes12.Person.start_link(room)
-    assert [] == Etudes12.Chatroom.users
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, _} = Etudes12.Person.start_link("person1")
+    assert [] == Etudes12.Chatroom.users(room1)
   end
 
   test "Client logs in" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    assert [{{"Steve", room}, person}] == Etudes12.Chatroom.users
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert [{"person1", person1}] == Etudes12.Chatroom.users(room1)
   end
 
   test "Client logs in twice" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    assert {:error, "User already logged in"} == Etudes12.Person.login(person, "Steve")
-    assert [{{"Steve", room}, person}] == Etudes12.Chatroom.users
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert {:error, "User already logged in"} == Etudes12.Person.login(person1, room1)
+    assert [{"person1", person1}] == Etudes12.Chatroom.users(room1)
   end
 
   test "Client with the same name tries to log in" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person1} = Etudes12.Person.start_link(room)
-    {:ok, person2} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person1, "Steve")
-    assert {:error, "User already logged in"} == Etudes12.Person.login(person2, "Steve")
-    assert [{{"Steve", room}, person1}] == Etudes12.Chatroom.users
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1a} = Etudes12.Person.start_link("person1")
+    {:ok, person1b} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1a, room1)
+    assert {:error, "User already logged in"} == Etudes12.Person.login(person1b, room1)
+    assert [{"person1", person1a}] == Etudes12.Chatroom.users(room1)
   end
 
   test "Non-logged client tries to log out" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert {:error, "User not logged in"} == Etudes12.Person.logout(person)
-    assert [] == Etudes12.Chatroom.users
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert {:error, "User not logged in"} == Etudes12.Person.logout(person1, room1)
+    assert [] == Etudes12.Chatroom.users(room1)
   end
 
   test "Logged out client tries to log out" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    assert :ok == Etudes12.Person.logout(person)
-    assert [] == Etudes12.Chatroom.users
-    assert {:error, "User not logged in"} == Etudes12.Person.logout(person)
-    assert [] == Etudes12.Chatroom.users
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert :ok == Etudes12.Person.logout(person1, room1)
+    assert [] == Etudes12.Chatroom.users(room1)
+    assert {:error, "User not logged in"} == Etudes12.Person.logout(person1, room1)
+    assert [] == Etudes12.Chatroom.users(room1)
   end
 
   test "Client logs out" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    assert [{{"Steve", room}, person}] == Etudes12.Chatroom.users
-    assert :ok == Etudes12.Person.logout(person)
-    assert [] == Etudes12.Chatroom.users
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert [{"person1", person1}] == Etudes12.Chatroom.users(room1)
+    assert :ok == Etudes12.Person.logout(person1, room1)
+    assert [] == Etudes12.Chatroom.users(room1)
   end
 
   test "Set profile property" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    Etudes12.Person.set_profile(person, "ABC","DEF")
-    assert %{"ABC" => "DEF"} == Etudes12.Chatroom.who("Steve", room)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    Etudes12.Person.set_profile(person1, "ABC","DEF")
+    assert %{"ABC" => "DEF"} == Etudes12.Chatroom.who("person1", room1)
   end
 
   test "Set property twice" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    Etudes12.Person.set_profile(person, "ABC","DEF")
-    Etudes12.Person.set_profile(person, "ABC","GHI")
-    assert %{"ABC" => "GHI"} == Etudes12.Chatroom.who("Steve", room)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    Etudes12.Person.set_profile(person1, "ABC","DEF")
+    Etudes12.Person.set_profile(person1, "ABC","GHI")
+    assert %{"ABC" => "GHI"} == Etudes12.Chatroom.who("person1", room1)
   end
 
   test "Inspecting a person" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    assert %{} == Etudes12.Chatroom.who("Steve", room)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert %{} == Etudes12.Chatroom.who("person1", room1)
   end
 
   test "Inspecting a non-logged person" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, _} = Etudes12.Person.start_link(room)
-    assert {:error, "Unknown user"} == Etudes12.Chatroom.who("Steve", room)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, _} = Etudes12.Person.start_link("person1")
+    assert {:error, "Unknown user"} == Etudes12.Chatroom.who("person1", room1)
   end
 
   test "Inspecting a non-existent person" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person, "Steve")
-    assert {:error, "Unknown user"} == Etudes12.Chatroom.who("Stevo", room)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert {:error, "Unknown user"} == Etudes12.Chatroom.who("person2", room1)
   end
 
   test "Person says something to himself" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person1} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person1, "Steve")
-    Etudes12.Person.say(person1, "Somethin'")
-    assert [{{person1, room}, "Somethin'"}] == Etudes12.Person.get_history(person1)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    Etudes12.Person.say(person1, room1, "Somethin'")
+    assert [{{"person1", "room1"}, "Somethin'"}] == Etudes12.Person.get_history(person1)
   end
 
   test "Person says something (in company)" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person1} = Etudes12.Person.start_link(room)
-    {:ok, person2} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person1, "Steve")
-    assert :ok == Etudes12.Person.login(person2, "Benji")
-    Etudes12.Person.say(person1, "Somethin'")
-    assert [{{person1, room}, "Somethin'"}] == Etudes12.Person.get_history(person1)
-    assert [{{person1, room}, "Somethin'"}] == Etudes12.Person.get_history(person2)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    {:ok, person2} = Etudes12.Person.start_link("person2")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert :ok == Etudes12.Person.login(person2, room1)
+    Etudes12.Person.say(person1, room1, "Somethin'")
+    assert [{{person1, room1}, "Somethin'"}] == Etudes12.Person.get_history(person1)
+    assert [{{person1, room1}, "Somethin'"}] == Etudes12.Person.get_history(person2)
   end
 
   test "Messages come in sequence" do
-    {:ok, room} = Etudes12.Chatroom.start_link
-    {:ok, person1} = Etudes12.Person.start_link(room)
-    {:ok, person2} = Etudes12.Person.start_link(room)
-    assert :ok == Etudes12.Person.login(person1, "Steve")
-    assert :ok == Etudes12.Person.login(person2, "Benji")
-    Etudes12.Person.say(person2, "Somethin'")
-    Etudes12.Person.say(person1, "... different")
-    assert [{{person2, room}, "Somethin'"}, {{person1, room}, "... different"}] == Etudes12.Person.get_history(person1)
-    assert [{{person2, room}, "Somethin'"}, {{person1, room}, "... different"}] == Etudes12.Person.get_history(person2)
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    {:ok, person2} = Etudes12.Person.start_link("person2")
+    assert :ok == Etudes12.Person.login(person1, room1)
+    assert :ok == Etudes12.Person.login(person2, room1)
+    Etudes12.Person.say(person2, room1, "Somethin'")
+    Etudes12.Person.say(person1, room1, "... different")
+    assert [{{person2, room1}, "Somethin'"}, {{person1, room1}, "... different"}] == Etudes12.Person.get_history(person1)
+    assert [{{person2, room1}, "Somethin'"}, {{person1, room1}, "... different"}] == Etudes12.Person.get_history(person2)
   end
 
   test "Person tries to say something while not logged in"

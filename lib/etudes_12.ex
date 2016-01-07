@@ -99,54 +99,62 @@ defmodule Etudes12 do
   defmodule Chatroom do
     use GenServer
 
-    def start_link do
-      GenServer.start_link(__MODULE__, :ok, [{:name, __MODULE__}])
+    def start_link(name) do
+      GenServer.start_link(__MODULE__, name, [])
     end
 
-    def init(:ok) do
-      {:ok, []}
+    def init(name) do
+      {:ok, %{:name => name, :users => []}}
     end
 
-    def handle_call({:login, user_name, server_name}, {pid, reference}, state) do
-      found = List.keyfind(state, {user_name, server_name}, 0)
+    def handle_call({:login, user_name}, {pid, reference}, state) do
+      found = List.keyfind(state[:users], user_name, 0)
       case found do
-        nil -> {:reply, :ok, [{{user_name, server_name}, pid}] ++ state}
-        {{^user_name, ^server_name}, _} -> {:reply, {:error, "User already logged in"}, state}
+        nil -> {:reply, {:ok, state[:name]}, %{state | :users => [{user_name, pid}] ++ state[:users]}}
+        {^user_name, _} -> {:reply, {:error, "User already logged in"}, state}
       end
     end
 
     def handle_call(:logout, {pid, reference}, state) do
-      found = List.keyfind(state, pid, 1)
+      found = List.keyfind(state[:users], pid, 1)
       case found do
         nil -> {:reply, {:error, "User not logged in"}, state}
-        {{_, _}, pid} -> {:reply, :ok, List.delete(state, found)}
+        {_, pid} -> {:reply, :ok, %{state | :users => List.delete(state, found)}}
       end
     end
 
-    def handle_cast({:say, text}, state) do
-      {:noreply, state}
+    def handle_call({:say, text}, {pid, ref}, state) do
+      sayer = List.keyfind(state[:users], pid, 1)
+      case sayer do
+        {name, pid} ->
+          state[:users]
+            |> Enum.filter(fn {name1, pid1} -> pid != pid1 end)
+            |> GenServer.cast({:message, {name, state[:name]}, text})
+          {:reply, :ok, state}
+        _ -> {:reply, {:error, "User not logged in can't say anything"}, state}
+      end
     end
 
     def handle_call(:users, from, state) do
       {:reply, state, state}
     end
 
-    def handle_call({:profile, user_name, server_name}, from, state) do
-      found = List.keyfind(state, {user_name, server_name}, 0)
+    def handle_call({:profile, user_name}, from, state) do
+      found = List.keyfind(state[:users], user_name, 0)
       case found do
         nil -> {:reply, {:error, "Unknown user"}, state}
-        {{^user_name, ^server_name}, pid} ->
+        {^user_name, pid} ->
           profile = GenServer.call(pid, :get_profile)
           {:reply, profile, state}
       end
     end
 
-    def users() do
-      GenServer.call(Etudes12.Chatroom, :users)
+    def users(chatroom) do
+      GenServer.call(chatroom, :users)
     end
 
-    def who(user_name, user_node) do
-      GenServer.call(Etudes12.Chatroom, {:profile, user_name, user_node})
+    def who(user_name, chatroom) do
+      GenServer.call(chatroom, {:profile, user_name})
     end
 
   end
@@ -154,35 +162,53 @@ defmodule Etudes12 do
   defmodule Person do
     use GenServer
 
-    def start_link(chatroom) do
-      GenServer.start_link(__MODULE__, chatroom, [])
+    def start_link(name) do
+      GenServer.start_link(__MODULE__, name, [])
     end
 
-    def init(chatroom) do
-      {:ok, %{:chatroom => chatroom, :props => %{}, :history => []}}
+    def init(name) do
+      {:ok, %{:name => name, :chatrooms => [], :props => %{}, :history => []}}
     end
 
     # def handle_call(:get_chat_node, from, state) do
     #   {:reply, state[:chatroom], state}
     # end
 
-    def handle_call({:login, user_name}, from, state) do
-      response = GenServer.call(Etudes12.Chatroom, {:login, user_name, state[:chatroom]})
-      {:reply, response, state}
+    def handle_call({:login, chatroom}, from, state) do
+      response = GenServer.call(chatroom, {:login, state[:name]})
+      new_chatrooms =
+        case response do
+          {:ok, server_name} ->
+            [{server_name, chatroom}] ++ state[:chatrooms]
+          _ -> state[:chatrooms]
+        end
+      {:reply, response, %{state | :chatrooms => new_chatrooms}}
     end
 
-    def handle_call(:logout, from, state) do
-      response = GenServer.call(Etudes12.Chatroom, :logout)
-      {:reply, response, state}
+    def handle_call({:logout, chatroom}, from, state) do
+      response = GenServer.call(chatroom, :logout)
+      new_chatrooms =
+        case response do
+          {:ok, server_name} ->
+            List.delete(state[:chatrooms], {server_name, chatroom})
+          _ -> state[:chatrooms]
+        end
+      {:reply, response, %{state | :chatrooms => new_chatrooms}}
     end
 
-    def handle_cast({:say, text}, state) do
-      history = [{{self(), state[:chatroom]}, text}] ++ state[:history]
-      GenServer.cast(Etudes12.Chatroom, {:say, text})
-      {:noreply, %{:chatroom => state[:chatroom], :props => state[:props], :history => history}}
+    def handle_call({:say, chatroom, text}, {pid, ref}, state) do
+      room = List.keyfind(state[:chatrooms], chatroom, 1)
+      chatroom_name =
+        case room do
+          {chatroom_name, ^chatroom} -> chatroom_name
+          nil -> {:reply, {:error, "Can't say in channel you're not logged into"}, state}
+        end
+      history = [{{state[:name], chatroom_name}, text}] ++ state[:history]
+      GenServer.call(chatroom, {:say, text})
+      {:reply, :ok, %{state | :history => history}}
     end
 
-    def handle_call({:message, {from_user, from_server}, text}, from, state) do
+    def handle_call({:message, {user_name, chatroom_name}, text}, from, state) do
       state
     end
 
@@ -192,7 +218,7 @@ defmodule Etudes12 do
 
     def handle_call({:set_profile, key, value}, from, state) do
       props = Map.put(state[:props], key, value)
-      {:reply, :ok, %{:chatroom => state[:chatroom], :props => props, :history => state[:history]}}
+      {:reply, :ok, %{state | :props => props}}
     end
 
     def handle_call(:get_history, from, state) do
@@ -203,16 +229,16 @@ defmodule Etudes12 do
     #   GenServer.call(person, :get_chat_node)
     # end
 
-    def login(person, user_name) do
-      GenServer.call(person, {:login, user_name})
+    def login(person, room) do
+      GenServer.call(person, {:login, room})
     end
 
-    def logout(person) do
-      GenServer.call(person, :logout)
+    def logout(person, room) do
+      GenServer.call(person, {:logout, room})
     end
 
-    def say(person, text) do
-      GenServer.cast(person, {:say, text})
+    def say(person, room, text) do
+      GenServer.call(person, {:say, room, text})
     end
 
     def set_profile(person, key, value) do
