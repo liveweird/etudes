@@ -125,17 +125,18 @@ defmodule Etudes12 do
 
     def handle_call({:say, text}, {pid, ref}, state) do
       sayer = List.keyfind(state[:users], pid, 1)
-      Logger.info "Before output"
       output =
         case sayer do
           {name, pid} ->
             state[:users]
               |> Enum.filter(fn {name1, pid1} -> pid != pid1 end)
-              |> Enum.each(fn {name2, pid2} -> GenServer.cast(pid2, {:message, {name, state[:name]}, text}) end)
+              |> Enum.each(fn {name2, pid2} ->
+                Logger.info("#{inspect self()} calling #{inspect pid2}")
+                GenServer.cast(pid2, {:message, {name, state[:name]}, text})
+              end)
             :ok
           _ -> {:error, "User not logged in can't say anything"}
         end
-      Logger.info "Output = #{output}"
       {:reply, output, state}
     end
 
