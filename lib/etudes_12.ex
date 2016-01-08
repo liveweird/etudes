@@ -119,24 +119,28 @@ defmodule Etudes12 do
       found = List.keyfind(state[:users], pid, 1)
       case found do
         nil -> {:reply, {:error, "User not logged in"}, state}
-        {_, pid} -> {:reply, :ok, %{state | :users => List.delete(state, found)}}
+        {_, pid} -> {:reply, :ok, %{state | :users => List.delete(state[:users], found)}}
       end
     end
 
     def handle_call({:say, text}, {pid, ref}, state) do
       sayer = List.keyfind(state[:users], pid, 1)
-      case sayer do
-        {name, pid} ->
-          state[:users]
-            |> Enum.filter(fn {name1, pid1} -> pid != pid1 end)
-            |> GenServer.cast({:message, {name, state[:name]}, text})
-          {:reply, :ok, state}
-        _ -> {:reply, {:error, "User not logged in can't say anything"}, state}
-      end
+      Logger.info "Before output"
+      output =
+        case sayer do
+          {name, pid} ->
+            state[:users]
+              |> Enum.filter(fn {name1, pid1} -> pid != pid1 end)
+              |> Enum.each(fn {name2, pid2} -> GenServer.cast(pid2, {:message, {name, state[:name]}, text}) end)
+            :ok
+          _ -> {:error, "User not logged in can't say anything"}
+        end
+      Logger.info "Output = #{output}"
+      {:reply, output, state}
     end
 
     def handle_call(:users, from, state) do
-      {:reply, state, state}
+      {:reply, state[:users], state}
     end
 
     def handle_call({:profile, user_name}, from, state) do
@@ -198,18 +202,20 @@ defmodule Etudes12 do
 
     def handle_call({:say, chatroom, text}, {pid, ref}, state) do
       room = List.keyfind(state[:chatrooms], chatroom, 1)
-      chatroom_name =
+      output =
         case room do
-          {chatroom_name, ^chatroom} -> chatroom_name
+          {chatroom_name, ^chatroom} ->
+            history = [{{state[:name], chatroom_name}, text}] ++ state[:history]
+            response = GenServer.call(chatroom, {:say, text})
+            {:reply, response, %{state | :history => history}}
           nil -> {:reply, {:error, "Can't say in channel you're not logged into"}, state}
         end
-      history = [{{state[:name], chatroom_name}, text}] ++ state[:history]
-      GenServer.call(chatroom, {:say, text})
-      {:reply, :ok, %{state | :history => history}}
+      output
     end
 
-    def handle_call({:message, {user_name, chatroom_name}, text}, from, state) do
-      state
+    def handle_cast({:message, {user_name, chatroom_name}, text}, state) do
+      history = [{{user_name, chatroom_name}, text}] ++ state[:history]
+      {:noreply, :ok, %{state | :history => history}}
     end
 
     def handle_call(:get_profile, from, state) do
