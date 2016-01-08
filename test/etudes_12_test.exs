@@ -144,6 +144,15 @@ defmodule Etudes12Test do
     assert [{{"person1", "room1"}, "Somethin'"}] == Etudes12.Person.get_history(person1)
   end
 
+  test "Person says two things to himself" do
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert {:ok, "room1"} == Etudes12.Person.login(person1, room1)
+    Etudes12.Person.say(person1, room1, "Somethin'")
+    Etudes12.Person.say(person1, room1, "... different")
+    assert [{{"person1", "room1"}, "... different"}, {{"person1", "room1"}, "Somethin'"}] == Etudes12.Person.get_history(person1)
+  end
+
   test "Person says something (in company)" do
     {:ok, room1} = Etudes12.Chatroom.start_link("room1")
     {:ok, person1} = Etudes12.Person.start_link("person1")
