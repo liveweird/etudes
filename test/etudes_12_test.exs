@@ -192,6 +192,15 @@ defmodule Etudes12Test do
     assert [] == Etudes12.Person.get_history(person1)
   end
 
-  test "Person writes something to two different chatrooms"
+  test "Person writes something to two different chatrooms" do
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, room2} = Etudes12.Chatroom.start_link("room2")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert {:ok, "room1"} == Etudes12.Person.login(person1, room1)
+    assert {:ok, "room2"} == Etudes12.Person.login(person1, room2)
+    Etudes12.Person.say(person1, room2, "Somethin'")
+    Etudes12.Person.say(person1, room1, "... different")
+    assert [{{"person1", "room1"}, "... different"}, {{"person1", "room2"}, "Somethin'"}] == Etudes12.Person.get_history(person1)
+  end
 
 end
