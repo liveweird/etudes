@@ -84,7 +84,7 @@ defmodule Etudes12Test do
     {:ok, room1} = Etudes12.Chatroom.start_link("room1")
     {:ok, person1} = Etudes12.Person.start_link("person1")
     assert {:ok, "room1"} == Etudes12.Person.login(person1, room1)
-    assert :ok == Etudes12.Person.logout(person1, room1)
+    assert {:ok, "room1"} == Etudes12.Person.logout(person1, room1)
     assert [] == Etudes12.Chatroom.users(room1)
     assert {:error, "User not logged in"} == Etudes12.Person.logout(person1, room1)
     assert [] == Etudes12.Chatroom.users(room1)
@@ -95,7 +95,7 @@ defmodule Etudes12Test do
     {:ok, person1} = Etudes12.Person.start_link("person1")
     assert {:ok, "room1"} == Etudes12.Person.login(person1, room1)
     assert [{"person1", person1}] == Etudes12.Chatroom.users(room1)
-    assert :ok == Etudes12.Person.logout(person1, room1)
+    assert {:ok, "room1"} == Etudes12.Person.logout(person1, room1)
     assert [] == Etudes12.Chatroom.users(room1)
   end
 
@@ -176,9 +176,21 @@ defmodule Etudes12Test do
     assert [{{"person1", "room1"}, "... different"}, {{"person2", "room1"}, "Somethin'"}] == Etudes12.Person.get_history(person2)
   end
 
-  test "Person tries to say something while not logged in"
+  test "Person tries to say something while not logged in" do
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert {:error, "Can't say in channel you're not logged into"} == Etudes12.Person.say(person1, room1, "Somethin'")
+    assert [] == Etudes12.Person.get_history(person1)
+  end
 
-  test "Person tries to say something after logging out"
+  test "Person tries to say something after logging out" do
+    {:ok, room1} = Etudes12.Chatroom.start_link("room1")
+    {:ok, person1} = Etudes12.Person.start_link("person1")
+    assert {:ok, "room1"} == Etudes12.Person.login(person1, room1)
+    assert {:ok, "room1"} == Etudes12.Person.logout(person1, room1)
+    assert {:error, "Can't say in channel you're not logged into"} == Etudes12.Person.say(person1, room1, "Somethin'")
+    assert [] == Etudes12.Person.get_history(person1)
+  end
 
   test "Person writes something to two different chatrooms"
 

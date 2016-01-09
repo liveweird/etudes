@@ -117,10 +117,12 @@ defmodule Etudes12 do
 
     def handle_call(:logout, {pid, reference}, state) do
       found = List.keyfind(state[:users], pid, 1)
-      case found do
-        nil -> {:reply, {:error, "User not logged in"}, state}
-        {_, pid} -> {:reply, :ok, %{state | :users => List.delete(state[:users], found)}}
-      end
+      response =
+        case found do
+          nil -> {:reply, {:error, "User not logged in"}, state}
+          {_, pid} -> {:reply, {:ok, state[:name]}, %{state | :users => List.delete(state[:users], found)}}
+        end
+      response
     end
 
     def handle_call({:say, text}, {pid, ref}, state) do
