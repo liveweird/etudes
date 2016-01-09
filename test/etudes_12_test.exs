@@ -171,9 +171,9 @@ defmodule Etudes12Test do
     assert {:ok, "room1"} == Etudes12.Person.login(person1, room1)
     assert {:ok, "room1"} == Etudes12.Person.login(person2, room1)
     Etudes12.Person.say(person2, room1, "Somethin'")
-    assert [{{person2, room1}, "Somethin'"}, {{person1, room1}, "... different"}] == Etudes12.Person.get_history(person1)
     Etudes12.Person.say(person1, room1, "... different")
-    assert [{{person2, room1}, "Somethin'"}, {{person1, room1}, "... different"}] == Etudes12.Person.get_history(person2)
+    assert [{{"person1", "room1"}, "... different"}, {{"person2", "room1"}, "Somethin'"}] == Etudes12.Person.get_history(person1)
+    assert [{{"person1", "room1"}, "... different"}, {{"person2", "room1"}, "Somethin'"}] == Etudes12.Person.get_history(person2)
   end
 
   test "Person tries to say something while not logged in"

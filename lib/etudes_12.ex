@@ -132,14 +132,14 @@ defmodule Etudes12 do
               |> Enum.filter(fn {name1, pid1} -> pid != pid1 end)
               |> Enum.each(fn {name2, pid2} ->
                 message = {:message, {name, state[:name]}, text}
-                Logger.info("#{inspect self()} sending #{inspect message} to #{inspect pid2}")
+                # Logger.info("#{inspect self()} sending #{inspect message} to #{inspect pid2}")
                 GenServer.cast(pid2, message)
-                Logger.info("#{inspect self()} has sent #{inspect message} to #{inspect pid2}")
+                # Logger.info("#{inspect self()} has sent #{inspect message} to #{inspect pid2}")
               end)
             :ok
           _ -> {:error, "User not logged in can't say anything"}
         end
-      Logger.info("Chatroom.say returning #{inspect output}")
+      # Logger.info("Chatroom.say returning #{inspect output}")
       {:reply, output, state}
     end
 
@@ -210,19 +210,19 @@ defmodule Etudes12 do
         case room do
           {chatroom_name, ^chatroom} ->
             history = [{{state[:name], chatroom_name}, text}] ++ state[:history]
-            Logger.info("About to call Chatroom.say")
+            # Logger.info("About to call Chatroom.say")
             response = GenServer.call(chatroom, {:say, text})
-            Logger.info("Chatroom.say was called")
+            # Logger.info("Chatroom.say was called")
             {:reply, response, %{state | :history => history}}
           nil -> {:reply, {:error, "Can't say in channel you're not logged into"}, state}
         end
-      Logger.info("Person.say returning #{inspect output}")
+      # Logger.info("Person.say returning #{inspect output}")
       output
     end
 
     def handle_cast({:message, {user_name, chatroom_name}, text}, state) do
       history = [{{user_name, chatroom_name}, text}] ++ state[:history]
-      {:noreply, :ok, %{state | :history => history}}
+      {:noreply, %{state | :history => history}}
     end
 
     def handle_call(:get_profile, from, state) do
@@ -252,7 +252,6 @@ defmodule Etudes12 do
 
     def say(person, room, text) do
       GenServer.call(person, {:say, room, text})
-      Logger.info("Person.say was called!")
     end
 
     def set_profile(person, key, value) do
