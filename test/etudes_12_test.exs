@@ -8,6 +8,7 @@ defmodule Etudes12Test do
   import ExUnit.CaptureIO
 
   test "Get weather info for existing location" do
+    Etudes12.WeatherSupervisor.tidy_up
     {:ok, visor} = Etudes12.WeatherSupervisor.start_link
     temp_c = Etudes12.ask_weather({"KSJC"})
     # Logger.info "Response: |#{inspect temp_c}|."
@@ -20,6 +21,7 @@ defmodule Etudes12Test do
   end
 
   test "Try to get weather for non-existent location" do
+    Etudes12.WeatherSupervisor.tidy_up
     {:ok, visor} = Etudes12.WeatherSupervisor.start_link
     temp_c = Etudes12.ask_weather({"WXYZ"})
     # Logger.info "Response: |#{inspect temp_c}|."
@@ -32,6 +34,7 @@ defmodule Etudes12Test do
   end
 
   test "History of visited sites works fine" do
+    Etudes12.WeatherSupervisor.tidy_up
     {:ok, visor} = Etudes12.WeatherSupervisor.start_link
     assert capture_io(fn ->
       Etudes12.ask_weather({"KSJC"})
