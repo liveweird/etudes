@@ -7,6 +7,8 @@ defmodule Etudes13Test do
 
   import ExUnit.CaptureIO
 
+  Etudes13.define_symbols
+
   test "Atomic weight of one atom" do
     assert o == 15.999
   end
