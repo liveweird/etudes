@@ -28,4 +28,14 @@ defmodule Etudes13Test do
     assert salt == 58.44
   end
 
+  test "Add durations that don't cause second overflow" do
+    duration = Etudes13.add({2,15},{3,12})
+    assert duration == {5,27}
+  end
+
+  test "Add durations that do cause second overflow" do
+    duration = Etudes13.add({2,45},{3,22})
+    assert duration == {6,7}
+  end
+
 end

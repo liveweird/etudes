@@ -25,4 +25,16 @@ defmodule Etudes13 do
       end)
   end
 
+  defmacro add({m1,s1}, {m2,s2}) do
+    quote do
+      m3 = unquote(m1) + unquote(m2)
+      s3 = unquote(s1) + unquote(s2)
+
+      m3 = m3 + div(s3, 60)
+      s3 = rem(s3, 60)
+
+      {m3,s3}
+    end
+  end
+
 end
