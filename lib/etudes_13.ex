@@ -37,4 +37,16 @@ defmodule Etudes13 do
     end
   end
 
+  defmacro {m1, s1} + {m2, s2} do
+    quote do
+      add({unquote(m1), unquote(s1)}, {unquote(m2), unquote(s2)})
+    end
+  end
+
+  defmacro x + y do
+    quote do
+      Kernel.+(unquote(x), unquote(y))
+    end
+  end
+
 end

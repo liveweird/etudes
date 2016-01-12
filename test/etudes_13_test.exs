@@ -6,8 +6,10 @@ defmodule Etudes13Test do
   require IEx
 
   import ExUnit.CaptureIO
+  import Etudes13
+  import Kernel, except: [+: 2]
 
-  Etudes13.define_symbols
+  define_symbols
 
   test "Atomic weight of one atom" do
     assert o == 15.999
@@ -29,12 +31,22 @@ defmodule Etudes13Test do
   end
 
   test "Add durations that don't cause second overflow" do
-    duration = Etudes13.add({2,15},{3,12})
+    duration = add({2,15},{3,12})
     assert duration == {5,27}
   end
 
   test "Add durations that do cause second overflow" do
-    duration = Etudes13.add({2,45},{3,22})
+    duration = add({2,45},{3,22})
+    assert duration == {6,7}
+  end
+
+  test "Add durations that don't cause second overflow (+)" do
+    duration = {2,15} + {3,12}
+    assert duration == {5,27}
+  end
+
+  test "Add durations that do cause second overflow (+)" do
+    duration = {2,45} + {3,22}
     assert duration == {6,7}
   end
 
